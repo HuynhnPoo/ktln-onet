@@ -49,14 +49,7 @@ public class LevelDataEditor : Editor
         DrawGridSizeSection(data);
         EditorGUILayout.Space(6);
 
-        SectionLabel("⏱️  GIỚI HẠN CHƠI");
-        EditorGUILayout.PropertyField(serializedObject.FindProperty("useTimeLimit"), new GUIContent("Dùng Time Limit"));
-        if (data.useTimeLimit)
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("timeLimit"), new GUIContent("Thời gian (giây)"));
-        EditorGUILayout.PropertyField(serializedObject.FindProperty("useMoveLimit"), new GUIContent("Dùng Move Limit"));
-        if (data.useMoveLimit)
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("maxMoves"), new GUIContent("Số nước đi tối đa"));
-        EditorGUILayout.PropertyField(serializedObject.FindProperty("maxNormalTypes"), new GUIContent("Số loại icon match tối đa"));
+        DrawLimitSection(data);
         EditorGUILayout.Space(8);
 
         SectionLabel("🎯  ĐỘ KHÓ — KIỂU DI CHUYỂN");
@@ -71,13 +64,60 @@ public class LevelDataEditor : Editor
         serializedObject.ApplyModifiedProperties();
     }
 
+    // ─── Limit / Match section ────────────────────────────────────────
+    private void DrawLimitSection(LevelData data)
+    {
+        SectionLabel("⏱️  GIỚI HẠN CHƠI");
+        EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+
+        // Time & Move limits
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("useTimeLimit"), new GUIContent("Dùng Time Limit"));
+        if (data.useTimeLimit)
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("timeLimit"), new GUIContent("Thời gian (giây)"));
+
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("useMoveLimit"), new GUIContent("Dùng Move Limit"));
+        if (data.useMoveLimit)
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("maxMoves"), new GUIContent("Số nước đi tối đa"));
+
+        EditorGUILayout.Space(6);
+        EditorGUILayout.LabelField("🎴  Thông tin type", EditorStyles.miniBoldLabel);
+        EditorGUI.indentLevel++;
+
+        // maxNormalTypes — chỉ Normal (1)
+        EditorGUILayout.PropertyField(
+            serializedObject.FindProperty("maxNormalTypes"),
+            new GUIContent("Số loại icon match tối đa",
+                "Chỉ áp dụng cho Normal (type 1). Obstacle không tính."));
+
+        // maxBoostPairs — slider 2–4
+        var boostProp = serializedObject.FindProperty("maxBoostPairs");
+        EditorGUILayout.BeginHorizontal();
+        EditorGUILayout.LabelField(
+            new GUIContent("Số cặp Boost (2–4)",
+                "Boost (type 2) xuất hiện tối đa 2–4 cặp (4–8 ô).\nKhông tính vào maxNormalTypes."),
+            GUILayout.Width(EditorGUIUtility.labelWidth));
+        boostProp.intValue = EditorGUILayout.IntSlider(boostProp.intValue, 0, 4);
+        EditorGUILayout.EndHorizontal();
+
+        // Info box
+        int boostCount = boostProp.intValue * 2;
+        var infoStyle = new GUIStyle(EditorStyles.helpBox) { fontSize = 11, richText = true };
+        EditorGUILayout.LabelField(
+            $"<b>Normal (1):</b> match theo {data.maxNormalTypes} loại icon  ✔\n" +
+            $"<b>Boost  (2):</b> {boostProp.intValue} cặp = {boostCount} ô  ✔\n" +
+            $"<b>Obstacle (3):</b> không tính match, giữ nguyên khi Random  ✔",
+            infoStyle, GUILayout.MinHeight(52));
+
+        EditorGUI.indentLevel--;
+        EditorGUILayout.EndVertical();
+    }
+
     // ─── Grid Size Section ───────────────────────────────────────────
     private void DrawGridSizeSection(LevelData data)
     {
         SectionLabel("📐  KÍCH THƯỚC LƯỚI");
         EditorGUILayout.BeginVertical(EditorStyles.helpBox);
 
-        // ── Số ô ────────────────────────────────────────────────────
         EditorGUILayout.LabelField("Số ô", EditorStyles.miniBoldLabel);
         EditorGUI.indentLevel++;
         EditorGUILayout.PropertyField(serializedObject.FindProperty("gridWidth"),
@@ -88,11 +128,9 @@ public class LevelDataEditor : Editor
 
         EditorGUILayout.Space(4);
 
-        // ── Cell Size & Spacing ──────────────────────────────────────
         EditorGUILayout.LabelField("Kích thước ô (World Units)", EditorStyles.miniBoldLabel);
         EditorGUI.indentLevel++;
 
-        // cellSize — slider trực quan
         var csProp = serializedObject.FindProperty("cellSize");
         EditorGUILayout.BeginHorizontal();
         EditorGUILayout.LabelField(
@@ -101,7 +139,6 @@ public class LevelDataEditor : Editor
         csProp.floatValue = EditorGUILayout.Slider(csProp.floatValue, 0.1f, 5f);
         EditorGUILayout.EndHorizontal();
 
-        // spacing — slider trực quan
         var spProp = serializedObject.FindProperty("spacing");
         EditorGUILayout.BeginHorizontal();
         EditorGUILayout.LabelField(
@@ -112,13 +149,11 @@ public class LevelDataEditor : Editor
 
         EditorGUI.indentLevel--;
 
-        // Clamp giá trị không âm
         if (csProp.floatValue < 0.01f) csProp.floatValue = 0.01f;
         if (spProp.floatValue < 0f) spProp.floatValue = 0f;
 
         EditorGUILayout.Space(5);
 
-        // ── Live info box ────────────────────────────────────────────
         float step = data.cellSize + data.spacing;
         float totalW = data.gridWidth * step - data.spacing;
         float totalH = data.gridHeight * step - data.spacing;
@@ -132,10 +167,7 @@ public class LevelDataEditor : Editor
             infoStyle, GUILayout.MinHeight(52));
 
         EditorGUILayout.Space(4);
-
-        // ── Mini grid preview ────────────────────────────────────────
         DrawMiniGridPreview(data);
-
         EditorGUILayout.Space(4);
 
         if (GUILayout.Button("🔄  Resize & Refresh Grid", GUILayout.Height(28)))
@@ -147,7 +179,7 @@ public class LevelDataEditor : Editor
         EditorGUILayout.EndVertical();
     }
 
-    // ── Mini visual preview của lưới (tỉ lệ thu nhỏ) ────────────────
+    // ── Mini visual preview của lưới ─────────────────────────────────
     private void DrawMiniGridPreview(LevelData data)
     {
         int cols = data.gridWidth;
@@ -162,7 +194,6 @@ public class LevelDataEditor : Editor
             GUILayout.ExpandWidth(true),
             GUILayout.Height(previewH));
 
-        // Nền
         EditorGUI.DrawRect(area, new Color(0.15f, 0.15f, 0.15f));
 
         float gapRatio = data.spacing / (data.cellSize + data.spacing);
@@ -172,29 +203,21 @@ public class LevelDataEditor : Editor
         float gapPxH = cellPixelH * gapRatio;
 
         Color cellCol = new Color(0.45f, 0.72f, 1f, 0.85f);
-        Color gapCol = new Color(0.08f, 0.08f, 0.08f);
 
         for (int row = 0; row < rows; row++)
-        {
             for (int col = 0; col < cols; col++)
             {
                 float px = area.x + col * (cellPixelW + gapPxW);
                 float py = area.y + row * (cellPixelH + gapPxH);
-                Rect cr = new Rect(px, py, cellPixelW, cellPixelH);
-                EditorGUI.DrawRect(cr, cellCol);
+                EditorGUI.DrawRect(new Rect(px, py, cellPixelW, cellPixelH), cellCol);
             }
-        }
 
-        // Watermark kích thước
         var lbl = new GUIStyle(EditorStyles.miniLabel)
         {
             alignment = TextAnchor.LowerRight,
             normal = { textColor = new Color(1f, 1f, 1f, 0.55f) },
         };
-        GUI.Label(new Rect(area.x, area.y, area.width - 3, previewH - 2),
-                  $"{cols}×{rows}", lbl);
-
-        // Viền
+        GUI.Label(new Rect(area.x, area.y, area.width - 3, previewH - 2), $"{cols}×{rows}", lbl);
         DrawBorderRect(area, new Color(0.3f, 0.3f, 0.3f, 0.9f));
     }
 

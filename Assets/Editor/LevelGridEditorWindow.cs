@@ -14,7 +14,7 @@ public class LevelGridEditorWindow : EditorWindow
 
     // ── Display options ───────────────────────────────────────────────
     private enum IndexMode { Off, FlatIndex, XY2D }
-    private IndexMode indexMode = IndexMode.XY2D;   // mặc định hiện [x,y]
+    private IndexMode indexMode = IndexMode.XY2D;
     private int cellSize = 52;
 
     // ── Palette ───────────────────────────────────────────────────────
@@ -101,15 +101,10 @@ public class LevelGridEditorWindow : EditorWindow
     {
         EditorGUILayout.BeginHorizontal();
 
-        // ── Index mode toggle ──────────────────────────────────────
         EditorGUILayout.LabelField("Index hiển thị:", GUILayout.Width(100));
-
-        if (GUILayout.Toggle(indexMode == IndexMode.Off, "Ẩn", "Button", GUILayout.Width(55)))
-            indexMode = IndexMode.Off;
-        if (GUILayout.Toggle(indexMode == IndexMode.FlatIndex, "Flat [i]", "Button", GUILayout.Width(72)))
-            indexMode = IndexMode.FlatIndex;
-        if (GUILayout.Toggle(indexMode == IndexMode.XY2D, "[x , y]", "Button", GUILayout.Width(72)))
-            indexMode = IndexMode.XY2D;
+        if (GUILayout.Toggle(indexMode == IndexMode.Off, "Ẩn", "Button", GUILayout.Width(55))) indexMode = IndexMode.Off;
+        if (GUILayout.Toggle(indexMode == IndexMode.FlatIndex, "Flat [i]", "Button", GUILayout.Width(72))) indexMode = IndexMode.FlatIndex;
+        if (GUILayout.Toggle(indexMode == IndexMode.XY2D, "[x , y]", "Button", GUILayout.Width(72))) indexMode = IndexMode.XY2D;
 
         GUILayout.Space(20);
         EditorGUILayout.LabelField("Cell px:", GUILayout.Width(52));
@@ -149,16 +144,12 @@ public class LevelGridEditorWindow : EditorWindow
         scrollPosGrid = GUI.BeginScrollView(scrollRect, scrollPosGrid,
                             new Rect(0, 0, gridW + 10, gridH + 10));
 
-        // ── Font styles ─────────────────────────────────────────────
-        // Giữa ô: số type (lớn)
         var styleCenter = new GUIStyle(EditorStyles.label)
         {
             alignment = TextAnchor.MiddleCenter,
             fontSize = Mathf.Max(11, cs / 4),
             fontStyle = FontStyle.Bold,
         };
-
-        // Góc trên trái: index (nhỏ)
         var styleCorner = new GUIStyle(EditorStyles.miniLabel)
         {
             alignment = TextAnchor.UpperLeft,
@@ -168,7 +159,7 @@ public class LevelGridEditorWindow : EditorWindow
 
         for (int row = 0; row < rows; row++)
         {
-            int y = rows - 1 - row; // hàng trên = y cao
+            int y = rows - 1 - row;
 
             for (int x = 0; x < cols; x++)
             {
@@ -178,42 +169,33 @@ public class LevelGridEditorWindow : EditorWindow
                 int ct = Mathf.Clamp(cell.type, 0, typeColors.Length - 1);
                 Rect rect = new Rect(x * (cs + gap), row * (cs + gap), cs, cs);
 
-                // Nền
                 EditorGUI.DrawRect(rect, typeColors[ct]);
 
-                // Viền
                 DrawBorder(rect,
                     cell.type == 0
                         ? new Color(0.45f, 0.45f, 0.45f, 0.55f)
                         : new Color(0f, 0f, 0f, 0.30f), 1);
 
-                // ── Giữa ô: số type (chỉ khi khác 0) ───────────────
                 if (cell.type != 0)
                 {
                     styleCenter.normal.textColor = Color.black;
                     GUI.Label(rect, cell.type.ToString(), styleCenter);
                 }
 
-                // ── Góc trên trái: index 2D hoặc flat ───────────────
                 if (indexMode != IndexMode.Off)
                 {
-                    string idxLabel;
-                    if (indexMode == IndexMode.XY2D)
-                        idxLabel = $"{x},{y}";          // mảng 2 chiều [x,y]
-                    else
-                        idxLabel = $"{y * cols + x}";   // flat index
+                    string idxLabel = indexMode == IndexMode.XY2D
+                        ? $"{x},{y}"
+                        : $"{y * cols + x}";
 
-                    // padding nhỏ
                     Rect cornerRect = new Rect(rect.x + 2, rect.y + 1, rect.width - 3, rect.height / 2);
-
                     styleCorner.normal.textColor = cell.type == 0
                         ? new Color(0.60f, 0.60f, 0.60f)
                         : new Color(0.10f, 0.10f, 0.10f, 0.75f);
-
                     GUI.Label(cornerRect, idxLabel, styleCorner);
                 }
 
-                // ── Mouse ────────────────────────────────────────────
+                // ── Mouse ──────────────────────────────────────────
                 if (e.isMouse && rect.Contains(e.mousePosition))
                 {
                     if (e.type == EventType.MouseDown)
@@ -266,48 +248,85 @@ public class LevelGridEditorWindow : EditorWindow
         EditorUtility.SetDirty(level); Repaint();
     }
 
-    // ─── Random — mỗi type LUÔN số ô CHẴN ───────────────────────────
+    // ─── Random — Normal(1) theo maxNormalTypes, Boost(2) 2–4 cặp ───
+    // Obstacle(3) giữ nguyên, không tính match
     private void RandomEvenTypes()
     {
         int total = level.gridWidth * level.gridHeight;
-        if (total % 2 != 0)
+
+        // 1. Ghi nhớ vị trí obstacle, giữ nguyên
+        var obstacleIdx = new HashSet<int>();
+        for (int i = 0; i < level.cells.Count; i++)
+            if (level.cells[i].type == 3)
+                obstacleIdx.Add(i);
+
+        int freeCells = total - obstacleIdx.Count;
+
+        // 2. Boost: clamp cứng 2–4 cặp
+        int boostPairs = Mathf.Clamp(level.maxBoostPairs, 2, 4);
+        int boostCount = boostPairs * 2;
+
+        // 3. Kiểm tra đủ ô
+        int normalCells = freeCells - boostCount;
+        if (normalCells <= 0 || normalCells % 2 != 0)
         {
             EditorUtility.DisplayDialog("Lỗi",
-                "Tổng số ô LẺ → không chia cặp được.\nDùng grid số ô chẵn (8×8, 6×10...).", "OK");
+                $"Không đủ ô cho Normal!\n" +
+                $"  Ô trống: {freeCells}\n" +
+                $"  Boost cần: {boostCount} ô ({boostPairs} cặp)\n" +
+                $"  Còn lại cho Normal: {normalCells} ô\n\n" +
+                "Hãy tăng kích thước grid hoặc giảm số cặp Boost / Obstacle.", "OK");
             return;
         }
 
+        // 4. Tạo pool Normal theo maxNormalTypes
         int numTypes = Mathf.Max(1, level.maxNormalTypes);
-        int totalPairs = total / 2;
-        if (totalPairs < numTypes) { numTypes = totalPairs; }
+        int normalPairs = normalCells / 2;
+        if (normalPairs < numTypes) numTypes = normalPairs;
 
-        int basePairs = totalPairs / numTypes;
-        int extraPairs = totalPairs % numTypes;
+        int basePairs = normalPairs / numTypes;
+        int extraPairs = normalPairs % numTypes;
 
-        var pool = new List<int>(total);
+        var pool = new List<int>(freeCells);
         for (int t = 1; t <= numTypes; t++)
         {
             int pairs = basePairs + (t <= extraPairs ? 1 : 0);
-            for (int i = 0; i < pairs * 2; i++) pool.Add(t);
+            for (int i = 0; i < pairs * 2; i++) pool.Add(1); // Normal = type 1
         }
 
+        // 5. Thêm Boost vào pool
+        for (int i = 0; i < boostCount; i++) pool.Add(2);
+
+        // 6. Shuffle Fisher-Yates
         for (int i = pool.Count - 1; i > 0; i--)
         {
             int j = Random.Range(0, i + 1);
             (pool[i], pool[j]) = (pool[j], pool[i]);
         }
 
-        for (int idx = 0; idx < level.cells.Count; idx++)
-            level.cells[idx].type = idx < pool.Count ? pool[idx] : 0;
+        // 7. Ghi vào cells, bỏ qua obstacle
+        int poolIdx = 0;
+        for (int i = 0; i < level.cells.Count; i++)
+        {
+            if (obstacleIdx.Contains(i)) continue; // giữ obstacle nguyên
+            level.cells[i].type = poolIdx < pool.Count ? pool[poolIdx++] : 0;
+        }
 
-        EditorUtility.SetDirty(level); Repaint();
+        EditorUtility.SetDirty(level);
+        Repaint();
 
+        // 8. Log kết quả
         var map = new Dictionary<int, int>();
-        foreach (var c in level.cells) { if (!map.ContainsKey(c.type)) map[c.type] = 0; map[c.type]++; }
+        foreach (var c in level.cells)
+        {
+            if (!map.ContainsKey(c.type)) map[c.type] = 0;
+            map[c.type]++;
+        }
         var sb = new System.Text.StringBuilder();
-        sb.AppendLine($"✅ Random xong — {numTypes} loại, {total} ô:");
-        foreach (var kv in map)
-            sb.AppendLine($"  Type {kv.Key}: {kv.Value} ô  {(kv.Value % 2 == 0 ? "✔ chẵn" : "✘ LẺ!")}");
+        sb.AppendLine($"✅ Random xong — {total} ô tổng:");
+        sb.AppendLine($"  🔵 Normal   (1): {(map.ContainsKey(1) ? map[1] : 0)} ô  → {numTypes} loại match  ✔ chẵn");
+        sb.AppendLine($"  🟡 Boost    (2): {(map.ContainsKey(2) ? map[2] : 0)} ô  → {boostPairs} cặp  ✔ chẵn");
+        sb.AppendLine($"  🔴 Obstacle (3): {obstacleIdx.Count} ô  → không tính match, giữ nguyên");
         Debug.Log(sb.ToString());
     }
 }
