@@ -31,7 +31,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 63533637967872
-    m_Localized: New Game
+    m_Localized: New Game (offline)
     m_Metadata:
       m_Items: []
   - m_Id: 63737657303040
@@ -64,6 +64,43 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 335938914623488
     m_Localized: Game Over !
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1451237877489664
+    m_Localized: You have entered incomplete or incorrect information. Please check
+      again.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1451158408011776
+    m_Localized: Login successful .
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1451463593959424
+    m_Localized: Registration Successful .
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1894385271447552
+    m_Localized: Forgot Password
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1894573432119296
+    m_Localized: Login
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1894685218709504
+    m_Localized: Register
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1894900524916736
+    m_Localized: Hide Pass
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2232208583303168
+    m_Localized: Play Online
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2251382554632192
+    m_Localized: No Internet
     m_Metadata:
       m_Items: []
   references:

@@ -1,17 +1,17 @@
 ﻿using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
-#if UNITY_WEBGL && !UNITY_EDITOR
-using System.Runtime.InteropServices;
-#endif
+
 public abstract class InputBase : MonoBehaviour, ICompoment, IPointerClickHandler
 {
     [SerializeField] protected TMP_InputField input;
-   
+    [SerializeField] protected bool isPassword;
 
     public void LoadCompoment()
     {
         if (input == null) input = GetComponent<TMP_InputField>();
+        if (isPassword==true) this.input.contentType = TMP_InputField.ContentType.Password;
+       
     }
 
     private void Awake()
@@ -56,5 +56,16 @@ public abstract class InputBase : MonoBehaviour, ICompoment, IPointerClickHandle
     public void OnPointerClick(PointerEventData eventData)
     {
         if (input != null && !input.isFocused) input.Select();
+        input.ActivateInputField();
+    }
+
+    public virtual void SetPassVisibility(bool isVisible)
+    {
+        if (input == null) return;
+        input.contentType = isVisible ?
+            TMPro.TMP_InputField.ContentType.Standard :
+            TMPro.TMP_InputField.ContentType.Password;
+
+        input.ForceLabelUpdate();
     }
 }

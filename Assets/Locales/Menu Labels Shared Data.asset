@@ -28,7 +28,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 63533637967872
-    m_Key: newGame.Txt
+    m_Key: newGameOffline.Txt
     m_Metadata:
       m_Items: []
   - m_Id: 63737657303040
@@ -61,6 +61,42 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 335938914623488
     m_Key: gameOver.Txt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1451158408011776
+    m_Key: loginSucces.Txt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1451237877489664
+    m_Key: login/ReisgerFail.Txt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1451463593959424
+    m_Key: RegisterSucces.Txt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1894385271447552
+    m_Key: forgotPass.Txt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1894573432119296
+    m_Key: loginGame.Txt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1894685218709504
+    m_Key: registerGame.Txt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1894900524916736
+    m_Key: hidePassword.Txt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2232208583303168
+    m_Key: playOnline.Txt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2251382554632192
+    m_Key: notiMenuOff_Txt
     m_Metadata:
       m_Items: []
   m_Metadata:

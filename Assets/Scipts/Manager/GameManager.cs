@@ -11,20 +11,21 @@ public class GameManager : SingletonBase<GameManager>
 
     private int score = 0;
     public int Score { get => score; set => score = value; }
-    
+
     private int coin = 0;
     public int Coin { get => coin; set => coin = value; }
     public int CurrentLevel { get; set; }
 
     private static bool isGameWin = false;
     public bool IsGameWin { get => isGameWin; set => isGameWin = value; }
-    private static bool isGameOver { set; get; } = false;
+    private static bool isGameOver = false;
+    public bool IsGameOver { set => isGameOver = value; get => isGameOver; }
 
     private static bool isPaused = false;
     public bool IsPaused { get => isPaused; set => isPaused = value; }
 
-    public string Notification { get; set; } = "null";
-    public string StatusGameStr { get; set; } = "null";
+
+
 
 
     private void OnEnable()
@@ -45,15 +46,18 @@ public class GameManager : SingletonBase<GameManager>
         }
     }
 
-   
+
     private void Init()
     {
         if (SceneManager.GetActiveScene().name == SceneType.GAMEOFFLINE.ToString())
         {
             //GameObject obj = 
             //Debug.Log(obj);
-            this.gridManager =FindAnyObjectByType<GridManager>();
+            this.gridManager = FindAnyObjectByType<GridManager>();
             Debug.Log(this.gridManager);
+
+            isGameOver = false;
+            IsGameWin = false;
             // Debug.Log(uiCenterCanvas);
         }
     }
@@ -65,7 +69,7 @@ public class GameManager : SingletonBase<GameManager>
         {
             Time.timeScale = 0f;
             obj.SetActive(true);
-         
+
             isPaused = true;
         }
         else
@@ -79,19 +83,22 @@ public class GameManager : SingletonBase<GameManager>
 
     public void GameOver()
     {
-        StatusGameStr = " Game Over !";
+        UIManager.Instance.StatusKeyGameStr = "gameOver.Txt";
+        isGameOver=true;
         Debug.Log("bạn đã thua");
-       GameObject obj= UIManager.Instance.uiCenterGameoffCanvas.transform.GetChild(1).gameObject;// panel game oveer được bật
+        GameObject obj = UIManager.Instance.uiCenterGameoffCanvas.transform.GetChild(1).gameObject;// panel game oveer được bật
         GameObject nextLevelButton = obj.transform.GetChild(0).GetChild(2).gameObject;
         obj.SetActive(true);
         nextLevelButton.SetActive(false);
 
+        
 
         Time.timeScale = 0f; // tạm dùng time
     }
     public void GameWon()
     {
-        StatusGameStr = " Game Won !";
+        UIManager.Instance.StatusKeyGameStr = "gameWon.Txt";
+        isGameWin= true;
         UIManager.Instance.uiCenterGameoffCanvas.transform.GetChild(1).gameObject.SetActive(true);
         Time.timeScale = 0f;
         Debug.Log("bạn đã chiến thắng");

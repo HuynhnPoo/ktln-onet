@@ -4,9 +4,6 @@ using UnityEngine.UI;
 
 public abstract class ButtonBase : MonoBehaviour
 {
-    /*#if UNITY_WEBGL && !UNITY_EDITOR
-        [DllImport("__Internal")] private static extern void HideInputField();
-    #endif*/
 
     protected Button button;
 

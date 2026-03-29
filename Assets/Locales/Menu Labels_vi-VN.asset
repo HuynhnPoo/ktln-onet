@@ -31,7 +31,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 63533637967872
-    m_Localized: "Ch\u01A1i M\u1EDBi"
+    m_Localized: "Ch\u01A1i M\u1EDBi (offline)"
     m_Metadata:
       m_Items: []
   - m_Id: 63737657303040
@@ -64,6 +64,43 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 335938914623488
     m_Localized: "Th\u1EA5t B\u1EA1i !"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1451237877489664
+    m_Localized: "B\u1EA1n \u0111\xE3 nh\u1EADp thi\u1EBFu ho\u1EB7c sai, B\u1EA1n
+      H\xE3y ki\u1EC3m tra l\u1EA1i"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1451158408011776
+    m_Localized: "\u0110\u0103ng Nh\u1EADp Th\xE0nh C\xF4ng ."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1451463593959424
+    m_Localized: "\u0110\u0103ng k\xED Th\xE0nh C\xF4ng ."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1894385271447552
+    m_Localized: "Qu\xEAn M\u1EADt Kh\u1EA9u"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1894573432119296
+    m_Localized: "\u0110\u0103ng Nh\u1EADp"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1894685218709504
+    m_Localized: "\u0110\u0103ng K\xED"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1894900524916736
+    m_Localized: "Hi\u1EC3n Th\u1ECB M\u1EADt Kh\u1EA9u"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2232208583303168
+    m_Localized: "Ch\u01A1i Online"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2251382554632192
+    m_Localized: "kh\xF4ng c\xF3 internet !"
     m_Metadata:
       m_Items: []
   references:

@@ -2,12 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ResutlsGametxt : TextBase
+public class NameDisplayTxt : TextBase
 {
     protected override void PrintText()
     {
-       // this.text.SetText(UIManager.Instance.StatusGameStr);
+        text.SetText(UIManager.Instance.DisplayNameUI);
     }
 
+    
   
 }
