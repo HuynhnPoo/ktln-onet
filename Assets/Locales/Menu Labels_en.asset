@@ -59,7 +59,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 335752490393600
-    m_Localized: Game Won !
+    m_Localized: Game Win !
     m_Metadata:
       m_Items: []
   - m_Id: 335938914623488
@@ -101,6 +101,42 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 2251382554632192
     m_Localized: No Internet
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2876756284153856
+    m_Localized: 'High Score:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2892545200496640
+    m_Localized: 'Show Password '
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2946776104181760
+    m_Localized: 'Level:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6861481382256640
+    m_Localized: Level Selection
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7229300468883456
+    m_Localized: Leader Board
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7229504354000896
+    m_Localized: Store
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7229622868254720
+    m_Localized: 'Music:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7229707597389824
+    m_Localized: 'Sound FX:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7299085357555712
+    m_Localized: 'Coin:'
     m_Metadata:
       m_Items: []
   references:

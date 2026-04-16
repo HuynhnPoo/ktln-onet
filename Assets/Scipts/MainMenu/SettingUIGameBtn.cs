@@ -5,19 +5,20 @@ using UnityEngine;
 public class SettingUIGameBtn : ButtonBase
 {
     private static bool isOpenSettingPanel=true;
+    [SerializeField] private GameObject pausePanel; 
 
     public override void OnClick()
     {
         if (isOpenSettingPanel)
         {
 
-        GameObject objBtn = UIManager.Instance.uiCenterMainMenuCanvas.transform.GetChild(1).gameObject;
-        objBtn.SetActive(true);
+            // GameObject objBtn = UIManager.Instance.uiCenterMainMenuCanvas.transform.GetChild(1).gameObject;
+            pausePanel.SetActive(true);
             isOpenSettingPanel = false;
         }
         else {
-            GameObject objBtn = UIManager.Instance.uiCenterMainMenuCanvas.transform.GetChild(1).gameObject;
-            objBtn.SetActive(false);
+            // GameObject objBtn = UIManager.Instance.uiCenterMainMenuCanvas.transform.GetChild(1).gameObject;
+            pausePanel.SetActive(false);
             isOpenSettingPanel = true;
         }
     }

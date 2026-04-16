@@ -13,20 +13,44 @@ public class LevelManager : MonoBehaviour, ICompoment
 
     int height, width;
 
-    private void OnEnable()
-    {
-     
-    }
 
-    private void Start()
+    public bool isOnlineMode;
+    private void Awake()
     {
         LoadCompoment();
-       // LoadCurrentLevel(GameManager.Instance.CurrentLevel);
-        LoadCurrentLevel(0);
+        
     }
+    private void Start()
+    {
+        // LoadCurrentLevel(0);
+        CofnirmStatusGame();
+    }
+
+   public void CofnirmStatusGame()
+    {
+        int levelToLoad = 0;
+
+        if (isOnlineMode && PlayFabDataManager.Instance.playerData != null)
+        {
+            // Nếu Online: Lấy level cao nhất hiện tại của người dùng
+            levelToLoad = PlayFabDataManager.Instance.playerData.highestLevel - 1;
+        }
+        else
+        {
+            // Nếu Offline: Lấy từ GameManager (thường là từ Local Save hoặc biến tạm)
+            levelToLoad = GameManager.Instance.CurrentLevel;
+        
+        }
+
+        Debug.Log(levelToLoad);
+
+        LoadCurrentLevel(10); // nhớ set id trong SO
+    }
+
     public void LoadCurrentLevel(int currentLevel)
     {
-        Debug.Log(allLevel);
+
+
         if (allLevel == null)
         {
             Debug.LogError("all level chưa được gắn");
@@ -34,17 +58,20 @@ public class LevelManager : MonoBehaviour, ICompoment
         }
 
         currentLevelData = allLevel.GetLevelLayout(currentLevel);
-        // Debug.Log("level hiện tại là"+ currentLevelData);
+        Debug.Log("level hiện tại là" + currentLevelData + "     " + currentLevel);
 
         if (currentLevelData != null)
         {
-            GameMechanics.Init((int)currentLevelData.timeLimit);
+         //   Debug.Log("độ khó là "+ currentLevelData.gravityType);
+            GameMechanics.Init((int)currentLevelData.timeLimit, currentLevelData.scorePerNormalMatch,currentLevelData.gravityType);
             // Đảm bảo dữ liệu cell không bị rỗng trước khi vẽ
             currentLevelData.EnsureGridSize();
+
 
             // Gọi GridManager để vẽ
             // Giả sử bạn có tham chiếu tới GridManager qua GameManager hoặc kéo trực tiếp
             GridManager grid = GameManager.Instance.gridManager;
+            Debug.Log("grid :"+ grid);
             GameManager.Instance.gridManager.SpawnGridFromLevel(currentLevelData);
         }
 
@@ -54,8 +81,10 @@ public class LevelManager : MonoBehaviour, ICompoment
     {
         if (allLevel == null)
             allLevel = Resources.Load<LevelDatabaseList>("SO/StorangeLevelDatabase_1");
+        Debug.Log(isOnlineMode);
+        GameManager.Instance.IsOnlineMode = isOnlineMode;
 
-        Debug.Log(allLevel);
+
     }
 
     /*private void CreateDefaultLayout()

@@ -1,0 +1,184 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8018afefc4b89254c83f3f9f1ac44b86, type: 3}
+  m_Name: 4_Level
+  m_EditorClassIdentifier: 
+  levelID: 4
+  levelName: Level 1
+  backgroundSprite: {fileID: 0}
+  backgroundOverlay: {r: 0, g: 0, b: 0, a: 0}
+  gridWidth: 6
+  gridHeight: 6
+  cellSize: 1
+  spacing: 0.1
+  cells:
+  - x: 0
+    y: 0
+    iconID: 0
+    type: 0
+  - x: 0
+    y: 0
+    iconID: 0
+    type: 0
+  - x: 0
+    y: 0
+    iconID: 0
+    type: 0
+  - x: 0
+    y: 0
+    iconID: 0
+    type: 0
+  - x: 0
+    y: 0
+    iconID: 0
+    type: 0
+  - x: 0
+    y: 0
+    iconID: 0
+    type: 0
+  - x: 0
+    y: 0
+    iconID: 0
+    type: 0
+  - x: 0
+    y: 0
+    iconID: 0
+    type: 0
+  - x: 0
+    y: 0
+    iconID: 0
+    type: 0
+  - x: 0
+    y: 0
+    iconID: 0
+    type: 0
+  - x: 0
+    y: 0
+    iconID: 0
+    type: 0
+  - x: 0
+    y: 0
+    iconID: 0
+    type: 0
+  - x: 0
+    y: 0
+    iconID: 0
+    type: 0
+  - x: 0
+    y: 0
+    iconID: 0
+    type: 0
+  - x: 0
+    y: 0
+    iconID: 0
+    type: 0
+  - x: 0
+    y: 0
+    iconID: 0
+    type: 0
+  - x: 0
+    y: 0
+    iconID: 0
+    type: 0
+  - x: 0
+    y: 0
+    iconID: 0
+    type: 0
+  - x: 0
+    y: 0
+    iconID: 0
+    type: 0
+  - x: 0
+    y: 0
+    iconID: 0
+    type: 0
+  - x: 0
+    y: 0
+    iconID: 0
+    type: 0
+  - x: 0
+    y: 0
+    iconID: 0
+    type: 0
+  - x: 0
+    y: 0
+    iconID: 0
+    type: 0
+  - x: 0
+    y: 0
+    iconID: 0
+    type: 0
+  - x: 0
+    y: 0
+    iconID: 0
+    type: 0
+  - x: 0
+    y: 0
+    iconID: 0
+    type: 0
+  - x: 0
+    y: 0
+    iconID: 0
+    type: 0
+  - x: 0
+    y: 0
+    iconID: 0
+    type: 0
+  - x: 0
+    y: 0
+    iconID: 0
+    type: 0
+  - x: 0
+    y: 0
+    iconID: 0
+    type: 0
+  - x: 0
+    y: 0
+    iconID: 0
+    type: 0
+  - x: 0
+    y: 0
+    iconID: 0
+    type: 0
+  - x: 0
+    y: 0
+    iconID: 0
+    type: 0
+  - x: 0
+    y: 0
+    iconID: 0
+    type: 0
+  - x: 0
+    y: 0
+    iconID: 0
+    type: 0
+  - x: 0
+    y: 0
+    iconID: 0
+    type: 0
+  useTimeLimit: 1
+  timeLimit: 60
+  maxNormalTypes: 6
+  maxBoostPairs: 1
+  requireStarToWin: 1
+  scorePerNormalMatch: 100
+  scorePerBoostMatch: 250
+  useCombo: 1
+  comboMultiplierStep: 0.5
+  comboResetDelay: 3
+  maxComboCount: 0
+  scoreStar1: 500
+  scoreStar2: 1000
+  scoreStar3: 2000
+  gravityType: 0
+  gravitySpeed: 8
+  gravityLoop: 0

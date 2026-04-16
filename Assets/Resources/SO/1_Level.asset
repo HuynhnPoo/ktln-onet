@@ -13,260 +13,172 @@ MonoBehaviour:
   m_Name: 1_Level
   m_EditorClassIdentifier: 
   levelID: 1
-  levelName: Level 1
+  levelName: Level 2
   backgroundSprite: {fileID: 0}
   backgroundOverlay: {r: 0, g: 0, b: 0, a: 0}
-  gridWidth: 10
-  gridHeight: 8
-  cellSize: 1
-  spacing: 0.1
-  useTimeLimit: 1
-  timeLimit: 300
-  useMoveLimit: 0
-  maxMoves: 50
-  maxBoostPairs: 0
-  movementType: 0
-  movementSpeed: 1
-  movementDirection: 1
+  gridWidth: 6
+  gridHeight: 6
+  cellSize: 0.3
+  spacing: 0.9
   cells:
   - x: 0
     y: 0
-    type: 5
+    iconID: 0
+    type: 1
   - x: 1
     y: 0
-    type: 4
+    iconID: 0
+    type: 1
   - x: 2
     y: 0
-    type: 4
+    iconID: 0
+    type: 1
   - x: 3
     y: 0
-    type: 2
+    iconID: 0
+    type: 1
   - x: 4
     y: 0
-    type: 4
+    iconID: 0
+    type: 1
   - x: 5
     y: 0
-    type: 5
-  - x: 6
-    y: 0
-    type: 7
-  - x: 7
-    y: 0
-    type: 8
-  - x: 8
-    y: 0
-    type: 6
-  - x: 9
-    y: 0
-    type: 4
+    iconID: 0
+    type: 1
   - x: 0
     y: 1
-    type: 8
+    iconID: 0
+    type: 1
   - x: 1
     y: 1
-    type: 8
+    iconID: 0
+    type: 1
   - x: 2
     y: 1
-    type: 3
+    iconID: 0
+    type: 1
   - x: 3
     y: 1
-    type: 5
+    iconID: 0
+    type: 1
   - x: 4
     y: 1
-    type: 5
+    iconID: 0
+    type: 1
   - x: 5
     y: 1
-    type: 8
-  - x: 6
-    y: 1
-    type: 5
-  - x: 7
-    y: 1
-    type: 2
-  - x: 8
-    y: 1
-    type: 6
-  - x: 9
-    y: 1
-    type: 8
+    iconID: 0
+    type: 1
   - x: 0
     y: 2
-    type: 2
+    iconID: 0
+    type: 1
   - x: 1
     y: 2
+    iconID: 0
     type: 1
   - x: 2
     y: 2
-    type: 7
+    iconID: 0
+    type: 1
   - x: 3
     y: 2
-    type: 7
+    iconID: 0
+    type: 1
   - x: 4
     y: 2
-    type: 3
+    iconID: 0
+    type: 1
   - x: 5
     y: 2
-    type: 7
-  - x: 6
-    y: 2
+    iconID: 0
     type: 1
-  - x: 7
-    y: 2
-    type: 3
-  - x: 8
-    y: 2
-    type: 3
-  - x: 9
-    y: 2
-    type: 6
   - x: 0
     y: 3
-    type: 2
+    iconID: 0
+    type: 1
   - x: 1
     y: 3
-    type: 4
+    iconID: 0
+    type: 1
   - x: 2
     y: 3
-    type: 7
+    iconID: 0
+    type: 1
   - x: 3
     y: 3
-    type: 2
+    iconID: 0
+    type: 1
   - x: 4
     y: 3
-    type: 7
+    iconID: 0
+    type: 1
   - x: 5
     y: 3
-    type: 2
-  - x: 6
-    y: 3
-    type: 6
-  - x: 7
-    y: 3
-    type: 4
-  - x: 8
-    y: 3
+    iconID: 0
     type: 1
-  - x: 9
-    y: 3
-    type: 4
   - x: 0
     y: 4
-    type: 8
+    iconID: 0
+    type: 1
   - x: 1
     y: 4
+    iconID: 0
     type: 1
   - x: 2
     y: 4
-    type: 3
+    iconID: 0
+    type: 1
   - x: 3
     y: 4
+    iconID: 0
     type: 1
   - x: 4
     y: 4
+    iconID: 0
     type: 1
   - x: 5
     y: 4
-    type: 3
-  - x: 6
-    y: 4
-    type: 7
-  - x: 7
-    y: 4
-    type: 6
-  - x: 8
-    y: 4
-    type: 7
-  - x: 9
-    y: 4
-    type: 8
+    iconID: 0
+    type: 1
   - x: 0
     y: 5
-    type: 4
-  - x: 1
-    y: 5
-    type: 5
-  - x: 2
-    y: 5
-    type: 4
-  - x: 3
-    y: 5
-    type: 8
-  - x: 4
-    y: 5
-    type: 6
-  - x: 5
-    y: 5
-    type: 2
-  - x: 6
-    y: 5
-    type: 3
-  - x: 7
-    y: 5
-    type: 8
-  - x: 8
-    y: 5
-    type: 5
-  - x: 9
-    y: 5
-    type: 2
-  - x: 0
-    y: 6
+    iconID: 0
     type: 1
   - x: 1
-    y: 6
+    y: 5
+    iconID: 0
     type: 1
   - x: 2
-    y: 6
-    type: 7
+    y: 5
+    iconID: 0
+    type: 1
   - x: 3
-    y: 6
-    type: 2
+    y: 5
+    iconID: 0
+    type: 1
   - x: 4
-    y: 6
+    y: 5
+    iconID: 0
     type: 1
   - x: 5
-    y: 6
-    type: 3
-  - x: 6
-    y: 6
-    type: 5
-  - x: 7
-    y: 6
-    type: 4
-  - x: 8
-    y: 6
-    type: 6
-  - x: 9
-    y: 6
-    type: 6
-  - x: 0
-    y: 7
-    type: 6
-  - x: 1
-    y: 7
-    type: 5
-  - x: 2
-    y: 7
-    type: 5
-  - x: 3
-    y: 7
-    type: 8
-  - x: 4
-    y: 7
-    type: 6
-  - x: 5
-    y: 7
-    type: 3
-  - x: 6
-    y: 7
-    type: 2
-  - x: 7
-    y: 7
-    type: 3
-  - x: 8
-    y: 7
-    type: 7
-  - x: 9
-    y: 7
+    y: 5
+    iconID: 0
     type: 1
-  maxNormalTypes: 8
+  useTimeLimit: 1
+  timeLimit: 60
+  maxNormalTypes: 6
+  maxBoostPairs: 0
+  requireStarToWin: 1
+  scorePerNormalMatch: 100
+  scorePerBoostMatch: 250
+  useCombo: 1
+  comboMultiplierStep: 0.5
+  comboResetDelay: 3
+  maxComboCount: 8
+  scoreStar1: 500
+  scoreStar2: 1000
+  scoreStar3: 2000
+  gravityType: 0
+  gravitySpeed: 8
+  gravityLoop: 0

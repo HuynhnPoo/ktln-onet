@@ -17,8 +17,21 @@ MonoBehaviour:
   isUnlocked: 1
   isSelected: 0
   tileSprites:
-  - {fileID: 21300000, guid: 2f67eca43b3e9c64887aee7c5b6072c3, type: 3}
-  - {fileID: 21300000, guid: 195ebb4b6b8946d4889fd7fb3fda1663, type: 3}
-  scaleMultiplier: 0.1
+  - {fileID: -1976590114, guid: 6c816a6d6ad5ce24ab9b9f8b8a1a5593, type: 3}
+  - {fileID: -503318365, guid: 6c816a6d6ad5ce24ab9b9f8b8a1a5593, type: 3}
+  - {fileID: 1451125228, guid: 6c816a6d6ad5ce24ab9b9f8b8a1a5593, type: 3}
+  - {fileID: -996711209, guid: 6c816a6d6ad5ce24ab9b9f8b8a1a5593, type: 3}
+  - {fileID: 1992174537, guid: 6c816a6d6ad5ce24ab9b9f8b8a1a5593, type: 3}
+  - {fileID: 1535123817, guid: 6c816a6d6ad5ce24ab9b9f8b8a1a5593, type: 3}
+  - {fileID: -600727861, guid: 6c816a6d6ad5ce24ab9b9f8b8a1a5593, type: 3}
+  - {fileID: 752139503, guid: 6c816a6d6ad5ce24ab9b9f8b8a1a5593, type: 3}
+  - {fileID: -1449303197, guid: 6c816a6d6ad5ce24ab9b9f8b8a1a5593, type: 3}
+  - {fileID: 1429082463, guid: 6c816a6d6ad5ce24ab9b9f8b8a1a5593, type: 3}
+  - {fileID: -946902348, guid: 6c816a6d6ad5ce24ab9b9f8b8a1a5593, type: 3}
+  - {fileID: 1459662048, guid: 6c816a6d6ad5ce24ab9b9f8b8a1a5593, type: 3}
+  - {fileID: -1823619307, guid: 6c816a6d6ad5ce24ab9b9f8b8a1a5593, type: 3}
+  - {fileID: -1931571665, guid: 6c816a6d6ad5ce24ab9b9f8b8a1a5593, type: 3}
+  - {fileID: 79158509, guid: 6c816a6d6ad5ce24ab9b9f8b8a1a5593, type: 3}
+  scaleMultiplier: 0.2
   tintColor: {r: 1, g: 1, b: 1, a: 1}
   rotationOffset: 0

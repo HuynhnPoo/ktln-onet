@@ -1,18 +1,28 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ForgotButton : MonoBehaviour
+public class ForgotButton : ButtonBase
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    FormHander hander;
 
-    // Update is called once per frame
-    void Update()
+
+    protected override void OnEnable()
     {
-        
+        base.OnEnable();
+
+    }
+    protected override void Start()
+    {
+        base.Start();
+       
+        hander = UIManager.Instance.uiFormCanvas.GetComponent<FormHander>();
+
+    }
+    public override void OnClick()
+    {
+        Debug.Log("hiên thi thực hiện");
+        UIManager.Instance.TitlleFormGame = StringManager.titlleForgot;
+        hander?.ForgotPassword();
     }
 }

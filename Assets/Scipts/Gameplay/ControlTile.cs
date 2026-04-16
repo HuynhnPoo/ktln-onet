@@ -9,23 +9,48 @@ public class ControlTile : MonoBehaviour
     Vector2Int startPos;
     Vector2Int endPos;
 
+   
     private void OnEnable()
     {
         
         if (tile == null)
         tile =GetComponentInChildren<VisualTile>();
     }
-    // Start is called before the first frame update
-    void Start()
+
+    public void MoveToNewPosition(Vector3 startWorldPos, Board board)
     {
+        StopAllCoroutines();
+
+        // Đảm bảo VisualTile đã cập nhật x, y mới
+        VisualTile vTile = GetComponentInChildren<VisualTile>();
+
+        // Lấy vị trí đích cục bộ (Local) từ board và cộng với vị trí hiện tại của GridManager
+        // Cách này giúp tile luôn nằm đúng trong khung của GridManager
+        Vector3 targetPos = board.GetPostionWorld(vTile.Col, vTile.Row);
+
+        // Chuyển đổi targetPos từ Local sang World (tỉ lệ với cha của nó là GridManager)
+        Vector3 finalWorldPos = transform.parent.TransformPoint(targetPos);
+
+        StartCoroutine(LerpMove(startWorldPos, finalWorldPos, 0.3f));
+    }
+
+    private IEnumerator LerpMove(Vector3 start, Vector3 end, float duration)
+    {
+        float elapsed = 0;
+        transform.position = start;
+        while (elapsed < duration)
+        {
+            transform.position = Vector3.Lerp(start, end, elapsed / duration);
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+        transform.position = end;
     }
 
     private void OnMouseDown()
     {
-     //   Debug.Log("log được thực  hiên"+ tile.Row +" "+ tile.Col);
-      startPos=new Vector2Int(tile.Row,tile.Col);
-
-
+        //   Debug.Log("log được thực  hiên"+ tile.Row +" "+ tile.Col);
+        startPos = new Vector2Int(tile.Row, tile.Col);
     }
 
     private void OnMouseUp()
@@ -40,9 +65,5 @@ public class ControlTile : MonoBehaviour
     {
         Destroy(this.gameObject);
     }
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+  
 }

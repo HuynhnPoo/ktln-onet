@@ -1,4 +1,5 @@
 ﻿
+using System;
 using Unity.Burst.Intrinsics;
 using Unity.Jobs.LowLevel.Unsafe;
 using UnityEditor;
@@ -15,7 +16,9 @@ public class Board
     private float spacing;
 
     private LevelData levelData;
-    private GridCell[,] gridCell;
+    public GridCell[,] gridCell;
+  
+    public Action<GridCell, Vector3> OnCellMoved;
 
     public Board(int wight, int height, float cellSize, float spacing, LevelData levelData)
     {
@@ -38,19 +41,12 @@ public class Board
                     {
                         x = cell.x,
                         y = cell.y,
-                        iconID = cell.iconID,
-                        type = cell.type
+                        iconID = (cell != null) ? cell.iconID : -1,
+                        type = (cell != null) ? cell.type : 0
                     };
                 }
             }
         }
-        /* for (int i = 0; i < wight; i++)
-         {
-             for (int j = 0; j < height; j++)
-             {
-                 board[i, j] = new int[wight, height];
-             }
-         }*/
     }
 
     // Vector3 chứa độ lệch âm để dịch chuyển tâm bàn về(0,0,0)
@@ -65,8 +61,13 @@ public class Board
     //Lấy thông tin ô tại tọa độ (x, y). Có kiểm tra tràn mảng.
     public GridCell GetCell(int x, int y)
     {
-        if (x < 0 || x > this.width || y < 0 || y > this.height) return null;
-        return gridCell[x,y];
+        // Nếu tọa độ nằm ngoài mảng (ngoài biên)
+        if (x < 0 || x >= this.width || y < 0 || y >= this.height)
+        {
+            // Trả về một GridCell "ảo" có type = 0 (ô trống) để đường nối đi qua được
+            return new GridCell { x = x, y = y, type = 0 };
+        }
+        return gridCell[x, y];
     }
 
 
@@ -118,6 +119,22 @@ public class Board
         }
 
     }
+
+    public void OnMatchSuccess(int x1, int y1, int x2, int y2)
+    {
+        // 1. Xóa dữ liệu logic (Set type = 0)
+        SetCellEmpty(x1, y1);
+        SetCellEmpty(x2, y2);
+
+        // 2. Kiểm tra nếu level có yêu cầu di chuyển tile
+        if (levelData.gravityType != BoardGravityType.None)
+        {
+         //  GameMechanics.ApplyGravity(levelData.gravityType);
+        }
+
+        // 3. Kiểm tra xem đã thắng chưa
+        CheckLevelProgress(width, height);
+    }
 }
 
 
@@ -127,4 +144,12 @@ public class GridCell
     public int x, y; // vị trị
     public int iconID; // id xác định
     public int type; //  kiểm nó normal,hay boost hay objsatcles
+
+    public bool IsEmpty => type == 0;
+    public bool IsNormal => type == 1;
+    public bool IsBoost => type == 2;
+    public bool IsObstacle => type == 3;
+    public bool IsMatchable => type == 1 || type == 2;
+
+    public ControlTile linkedTile;
 }

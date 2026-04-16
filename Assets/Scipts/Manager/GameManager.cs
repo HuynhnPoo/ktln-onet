@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -12,7 +13,13 @@ public class GameManager : SingletonBase<GameManager>
     private int score = 0;
     public int Score { get => score; set => score = value; }
 
-    private int coin = 0;
+    private int amountScore = 0;
+    public int AmountScore { get => amountScore; set => amountScore = value; }
+
+    private int highScore = 0;
+    public int HighScore { get => highScore; set => highScore = value; }
+
+    private static int coin = 0;
     public int Coin { get => coin; set => coin = value; }
     public int CurrentLevel { get; set; }
 
@@ -24,8 +31,10 @@ public class GameManager : SingletonBase<GameManager>
     private static bool isPaused = false;
     public bool IsPaused { get => isPaused; set => isPaused = value; }
 
+    private static bool isOnlineMode = false;
+    public bool IsOnlineMode { get => isOnlineMode; set => isOnlineMode = value; }
 
-
+    public Action OnChangedStatusGame { get; set; }
 
 
     private void OnEnable()
@@ -44,64 +53,122 @@ public class GameManager : SingletonBase<GameManager>
         {
             Init();
         }
+        LevelManager lv = FindAnyObjectByType<LevelManager>();
+        if (lv != null)
+        {
+            lv.CofnirmStatusGame();
+        }
     }
 
 
     private void Init()
     {
-        if (SceneManager.GetActiveScene().name == SceneType.GAMEOFFLINE.ToString())
+        isGameOver = false;
+        IsGameWin = false;
+        if (SceneManager.GetActiveScene().name == SceneType.GAMEOFFLINE.ToString() || SceneManager.GetActiveScene().name == SceneType.GAMEONLINE.ToString())
         {
-            //GameObject obj = 
-            //Debug.Log(obj);
             this.gridManager = FindAnyObjectByType<GridManager>();
-            Debug.Log(this.gridManager);
 
-            isGameOver = false;
-            IsGameWin = false;
-            // Debug.Log(uiCenterCanvas);
         }
     }
 
     public void Pausing(bool paused)
     {
-        GameObject obj = UIManager.Instance.uiCenterGameoffCanvas.transform.GetChild(0).gameObject;
+
+        if (GameManager.Instance.IsOnlineMode) // khi online sẽ bật cái này
+        {
+            GameObject obj = UIManager.Instance.uiOnlinePlayGameCanvas.transform.GetChild(2).GetChild(0).gameObject;
+            PauseGame(paused, obj);
+
+        }
+        else
+        {
+
+            GameObject obj = UIManager.Instance.uiCenterGameoffCanvas.transform.GetChild(0).gameObject;
+            PauseGame(paused, obj);
+        }
+    }
+
+    void PauseGame(bool paused, GameObject pausePanel)
+    {
         if (!paused)  // kiểm tra xem nêu chưa pause thi thực hiện pause
         {
             Time.timeScale = 0f;
-            obj.SetActive(true);
+            pausePanel.SetActive(true);
 
             isPaused = true;
         }
         else
         {
             Time.timeScale = 1f;
-            obj.SetActive(false);
+            pausePanel.SetActive(false);
 
             isPaused = false;
         }
     }
-
     public void GameOver()
     {
         UIManager.Instance.StatusKeyGameStr = "gameOver.Txt";
-        isGameOver=true;
-        Debug.Log("bạn đã thua");
-        GameObject obj = UIManager.Instance.uiCenterGameoffCanvas.transform.GetChild(1).gameObject;// panel game oveer được bật
-        GameObject nextLevelButton = obj.transform.GetChild(0).GetChild(2).gameObject;
-        obj.SetActive(true);
-        nextLevelButton.SetActive(false);
+        isGameOver = true;
+        if (IsOnlineMode)
+        {
+            GameObject obj = UIManager.Instance.uiOnlinePlayGameCanvas.transform.GetChild(2).GetChild(1).gameObject;// panel game oveer được bật
+            GameObject nextLevelButton = obj.transform.GetChild(0).GetChild(2).gameObject;
+            obj.SetActive(true);
+            nextLevelButton.SetActive(false);
+        }
+        else
+        {
+            GameObject obj = UIManager.Instance.uiCenterGameoffCanvas.transform.GetChild(1).gameObject;// panel game oveer được bật
+            GameObject nextLevelButton = obj.transform.GetChild(0).GetChild(2).gameObject;
+            obj.SetActive(true);
+            nextLevelButton.SetActive(false);
+            SetHighScore();
 
-        
+        }
 
         Time.timeScale = 0f; // tạm dùng time
     }
     public void GameWon()
     {
         UIManager.Instance.StatusKeyGameStr = "gameWon.Txt";
-        isGameWin= true;
-        UIManager.Instance.uiCenterGameoffCanvas.transform.GetChild(1).gameObject.SetActive(true);
+
+        isGameWin = true;
+
+        if (IsOnlineMode)
+        {
+            if (PlayFabDataManager.Instance.playerData.highestLevel == CurrentLevel)
+            {
+                PlayFabDataManager.Instance.playerData.highestLevel += 1;
+            }
+            UIManager.Instance.uiOnlinePlayGameCanvas.transform.GetChild(2).GetChild(1).gameObject.SetActive(true);
+        }
+        else
+        {
+            int currentLevelIndexToNext = PlayerPrefs.GetInt(StringManager.levelReached, 0);
+
+            if (currentLevelIndexToNext == CurrentLevel)
+            {
+                currentLevelIndexToNext += 1;
+                PlayerPrefs.SetInt(StringManager.levelReached, currentLevelIndexToNext);
+                PlayerPrefs.Save();
+            }
+
+            UIManager.Instance.uiCenterGameoffCanvas.transform.GetChild(1).gameObject.SetActive(true);
+            SetHighScore();
+        }
         Time.timeScale = 0f;
         Debug.Log("bạn đã chiến thắng");
+    }
+
+
+    void SetHighScore()
+    {
+        if (score > highScore)
+        {
+            highScore = score;
+            PlayerPrefs.SetInt(StringManager.highScoreStr, highScore);
+        }
     }
 
 }

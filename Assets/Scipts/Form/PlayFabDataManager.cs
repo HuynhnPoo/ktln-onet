@@ -31,7 +31,7 @@ public class PlayerData
     public List<InventoryItem> inventory = new List<InventoryItem>();
 
     // Tiến trình game
-    public int highestLevel = 1;
+    public int highestLevel = 0;
 
     // lấy ietm
     public InventoryItem GetItem(string idItem)

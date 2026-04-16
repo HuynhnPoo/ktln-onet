@@ -10,8 +10,30 @@ public class UIManager : SingletonBase<UIManager>
     private static bool isLogin = true;
     public bool IsLogin { get => isLogin; set => isLogin = value; }
 
-    //  public string KeyNotificationTxt { get; set; } = "null";
-    public string StatusKeyGameStr { get; set; } = "null";
+
+    public static string titlleFormGame = "";
+    public Action<string> OnTitlleChanged;
+    public string TitlleFormGame 
+    {
+        get => titlleFormGame;
+        set
+        {
+            titlleFormGame = value;
+            OnTitlleChanged?.Invoke(titlleFormGame);
+        }
+
+    }
+
+    public static string statusKeyGameStr = ""; //khi game win hay over
+    public string StatusKeyGameStr
+    {
+        get => statusKeyGameStr;
+        set
+        {
+            statusKeyGameStr = value;
+            GameManager.Instance.OnChangedStatusGame.Invoke();
+        }
+    }
     public string DisplayNameUI { get; set; } = "null";
 
     public Action<string> OnNotificationChanged;
@@ -22,8 +44,8 @@ public class UIManager : SingletonBase<UIManager>
         get => keyNotificationTxt;
         set
         {
-                keyNotificationTxt = value;
-                OnNotificationChanged?.Invoke(keyNotificationTxt);
+            keyNotificationTxt = value;
+            OnNotificationChanged?.Invoke(keyNotificationTxt);
         }
     }
     public enum SceneType
@@ -32,13 +54,17 @@ public class UIManager : SingletonBase<UIManager>
         MAINMENU,
         LEVELMANAGER,
         ONLINEMAINMENU,
+        MATCHINGONLINE,
         FORM,
-        GAMEOFFLINE
+        GAMEOFFLINE,
+        GAMEONLINE
     }
 
     [SerializeField] public GameObject uiCenterMainMenuCanvas { get; private set; }
+    [SerializeField] public GameObject uiCenterMainMenuOnlineCanvas { get; private set; }
     [SerializeField] public GameObject uiCenterGameoffCanvas { get; private set; }
     [SerializeField] public GameObject uiFormCanvas { get; private set; }
+    [SerializeField] public GameObject uiOnlinePlayGameCanvas { get; private set; }
 
 
     private void OnEnable()
@@ -66,6 +92,11 @@ public class UIManager : SingletonBase<UIManager>
             this.uiCenterMainMenuCanvas = FindGameObjectByNameHide.FindGameObjectByName("center");
             // Debug.Log(uiCenterCanvas);
         }
+        else if (SceneManager.GetActiveScene().name == SceneType.ONLINEMAINMENU.ToString())
+        {
+            this.uiCenterMainMenuOnlineCanvas = FindGameObjectByNameHide.FindGameObjectByName("Canvas_online");
+            // Debug.Log(uiCenterCanvas);
+        }
         else if (SceneManager.GetActiveScene().name == SceneType.GAMEOFFLINE.ToString())
         {
             this.uiCenterGameoffCanvas = FindGameObjectByNameHide.FindGameObjectByName("UI-Center");
@@ -74,6 +105,13 @@ public class UIManager : SingletonBase<UIManager>
         else if (SceneManager.GetActiveScene().name == SceneType.FORM.ToString())
         {
             this.uiFormCanvas = FindGameObjectByNameHide.FindGameObjectByName(StringManager.formCanvas);
+            //   Debug.Log(this.uiFormCanvas);
+            // Debug.Log(uiCenterCanvas);
+        }
+
+        else if (SceneManager.GetActiveScene().name == SceneType.GAMEONLINE.ToString())
+        {
+            this.uiOnlinePlayGameCanvas = FindGameObjectByNameHide.FindGameObjectByName("Online_Front_Canvas");
             //   Debug.Log(this.uiFormCanvas);
             // Debug.Log(uiCenterCanvas);
         }

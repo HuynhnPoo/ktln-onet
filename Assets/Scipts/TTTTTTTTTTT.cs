@@ -5,22 +5,12 @@ using UnityEngine.UI;
 
 public class TTTTTTTTTTT : MonoBehaviour
 {
-   public Button button;
-   
-    // Start is called before the first frame update
-     void Start()
+    private void Update()
     {
-     button=GetComponent<Button>();
+        if (Input.GetKeyDown(KeyCode.V))
+        {
 
-      //  button.interactable=false;
-      //  button.enabled=false;
-
-        button.onClick.AddListener(() => Debug.Log("hhhhh") );
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
+            Debug.Log("hhhhhh"+PlayFabDataManager.Instance.playerData.playerName + " " + PlayFabDataManager.Instance.playerData.highestLevel);
+        }
     }
 }

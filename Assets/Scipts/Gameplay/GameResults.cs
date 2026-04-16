@@ -16,7 +16,6 @@ public class GameResults : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.A))
         {
 
-            Debug.Log("AAAAAAA");
             GameManager.Instance.GameOver();
         }
 

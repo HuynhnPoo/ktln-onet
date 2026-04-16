@@ -8,12 +8,13 @@ public class RegisterButton : ButtonBase
 
     public override void OnClick()
     {
+          UIManager.Instance.TitlleFormGame = StringManager.titlleRegister;
         if (!UIManager.Instance.IsLogin)
         {
-
+            Debug.Log(UIManager.Instance.IsLogin);
             hander = UIManager.Instance.uiFormCanvas.GetComponent<FormHander>();
             hander?.Register();
-            UIManager.Instance.IsLogin = true;
+            UIManager.Instance.IsLogin = false;
         }
         else
         {

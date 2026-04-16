@@ -15,17 +15,20 @@ public class GridManager : MonoBehaviour
     [SerializeField] private TileData tileData;
     public Board Board { get; set; }
     private ControlTile[,] allTiles;
+
+    public LevelManager LevelManagerGame { private set; get; }
     public LevelData levelData { get; set; }
-  [SerializeField]  private LineController lineController;
+    [SerializeField] private LineController lineController;
 
     Vector2Int? selectedTiled = null;
 
 
-  
     private void OnEnable()
     {
-       
+        LevelManagerGame = GetComponent<LevelManager>();
+
         lineController = GetComponent<LineController>();
+
     }
     private void Update()
     {
@@ -34,12 +37,11 @@ public class GridManager : MonoBehaviour
             CheckClickOutside();
         }
     }
+
     void CheckClickOutside()
     {
         Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero);
-
-
 
         if (hit.collider != null)
         {
@@ -71,6 +73,7 @@ public class GridManager : MonoBehaviour
         this.width = level.gridWidth;
         this.height = level.gridHeight;
         Board = new Board(width, height, level.cellSize, level.spacing, level);
+        Board.OnCellMoved += HandleGravityMove;
 
         Debug.Log($"GridManager position: {transform.position}");
         Debug.Log($"Camera position: {Camera.main.transform.position}");
@@ -107,18 +110,21 @@ public class GridManager : MonoBehaviour
         // 5. Spawn Tile vào các vị trí đã xác định
 
         allTiles = new ControlTile[this.width, this.height];
+        Debug.Log(validPositions.Count);
         for (int i = 0; i < validPositions.Count; i++)
         {
+
             Vector2Int posGrid = validPositions[i];
             int assignedIndex = pairIndices[i]; // Lấy ID đã được trộn
 
-            Vector3 posWorld = transform.position+ Board.GetPostionWorld(posGrid.x, posGrid.y);
+            Vector3 posWorld = transform.position + Board.GetPostionWorld(posGrid.x, posGrid.y);
 
             GameObject obj = Instantiate(tilePrefabs, posWorld, Quaternion.identity, transform);
             obj.name = $"Tile_{posGrid.x}_{posGrid.y}";
 
             ControlTile controlTile = obj.GetComponent<ControlTile>();
-            allTiles[posGrid.x, posGrid.y] = controlTile;// gán các tile
+            allTiles[posGrid.x, posGrid.y] = controlTile;
+            Board.GetCell(posGrid.x, posGrid.y).linkedTile = controlTile;
 
             VisualTile tile = obj.transform.GetChild(0).GetComponent<VisualTile>();
 
@@ -127,8 +133,27 @@ public class GridManager : MonoBehaviour
             tile.SetSkin(tileData); // Hàm SetSkin sẽ dùng tile.index để lấy sprite
             tile.SetPostionGrid(posGrid.x, posGrid.y);
 
-            Debug.Log(tile.transform.parent.name +" " + tile.index);
+            Debug.Log(tile.transform.parent.name + " " + tile.index);
             //  obj.transform.localScale = Vector3.one * tileData.scaleMultiplier;
+        }
+    }
+
+    private void HandleGravityMove(GridCell cell, Vector3 startWorldPos)
+    {
+        // Lấy Tile từ chính cái cell vừa được move
+        ControlTile tileToMove = cell.linkedTile;
+
+        if (tileToMove != null)
+        {
+            // Cập nhật lại tọa độ logic cho VisualTile trước khi di chuyển
+            VisualTile vTile = tileToMove.GetComponentInChildren<VisualTile>();
+            vTile.SetPostionGrid(cell.x, cell.y); // Để vTile.Col và vTile.Row mang giá trị mới
+
+            // Thực hiện Lerp
+            tileToMove.MoveToNewPosition(startWorldPos + transform.position, Board);
+
+            // Cập nhật lại mảng quản lý chính
+            allTiles[cell.x, cell.y] = tileToMove;
         }
     }
 
@@ -137,8 +162,8 @@ public class GridManager : MonoBehaviour
 
         for (int index = 0; index < validPos.Count; index++)
         {
-            
-           // Debug.Log("hien ra X" + posTile.x + " Y " + posTile.y + level.name + "cặp được gắn value" + pairIndeices[index]);
+
+            // Debug.Log("hien ra X" + posTile.x + " Y " + posTile.y + level.name + "cặp được gắn value" + pairIndeices[index]);
             var cell = Board.GetCell(validPos[index].x, validPos[index].y);
 
             if (cell != null) cell.iconID = pairIndeices[index];
@@ -196,12 +221,19 @@ public class GridManager : MonoBehaviour
                 return;
             }
 
-            List<Vector2Int> gridPath = GameMechanics.GetPath(firstTilePos,secondTilePos, Board);
+            List<Vector2Int> gridPath = GameMechanics.GetPath(firstTilePos, secondTilePos, Board);
 
-            if (gridPath !=null)
+            if (gridPath != null)
             {
 
                 HandleMatch(gridPath);
+                GameMechanics.AddScore(GameManager.Instance.AmountScore);
+
+                if (PlayFabDataManager.Instance.playerData != null) // chỉ thực hiện khi online được đnăg nhập
+                {
+                    GameMechanics.AddReward(PlayFabDataManager.Instance.playerData, 10, GameManager.Instance.AmountScore);// cộng thêm 10 vàng
+
+                }
                 Debug.Log("hai tile có thể connect được với nhau");
 
             }
@@ -213,6 +245,7 @@ public class GridManager : MonoBehaviour
         }
 
     }
+
     private void HandleMatch(List<Vector2Int> gridPath)
     {
         // Chuyển tọa độ Grid sang World để vẽ Line
@@ -229,14 +262,52 @@ public class GridManager : MonoBehaviour
         Vector2Int p1 = gridPath[0];
         Vector2Int p2 = gridPath[gridPath.Count - 1];
 
-       // Debug.Log(p1.x+ p1.y +"--"+p2.x+ p2.y);
+        // Debug.Log(p1.x+ p1.y +"--"+p2.x+ p2.y);
         Board.SetCellEmpty(p1.x, p1.y);
         Board.SetCellEmpty(p2.x, p2.y);
 
-        Debug.Log("hien thị ra" + allTiles[p1.x, p1.y] +" " + allTiles[p2.x, p2.y]);
+        Debug.Log("hien thị ra" + allTiles[p1.x, p1.y] + " " + allTiles[p2.x, p2.y]);
+        // Xóa Tile thực tế
         allTiles[p1.x, p1.y].DestroyTile();
+        allTiles[p1.x, p1.y] = null; // Quan trọng: Phải gán null trong mảng quản lý
         allTiles[p2.x, p2.y].DestroyTile();
+        allTiles[p2.x, p2.y] = null;
 
+        // KÍCH HOẠT TRỌNG LỰC
+        if (levelData.gravityType != BoardGravityType.None)
+        {
+            // Gọi hàm ApplyGravity mà chúng ta đã thảo luận ở các câu trước
+            // Bạn cần truyền mảng allTiles vào để GameMechanics có thể Swap cả tham chiếu Script
+            GameMechanics.ApplyGravity(Board, levelData.gravityType, Board.gridCell);
+
+            // Sau khi logic swap xong, ta cần cập nhật lại mảng allTiles hiển thị
+            SyncAllTilesArray();
+        }
         Board.CheckLevelProgress(this.width, this.height);
+    }
+
+    private void SyncAllTilesArray()
+    {
+        ControlTile[,] newLayout = new ControlTile[width, height];
+
+        // Duyệt qua tất cả ControlTile hiện có trên scene
+        ControlTile[] currentTiles = GetComponentsInChildren<ControlTile>();
+        foreach (var t in currentTiles)
+        {
+            VisualTile v = t.GetComponentInChildren<VisualTile>();
+            // Tìm xem tile này đang ở đâu trong logic Board
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    if (Board.GetCell(x, y) != null && !Board.GetCell(x, y).IsEmpty)
+                    {
+                        // Nếu iconID khớp (hoặc bạn có ID riêng cho mỗi GridCell object)
+                        // Ở đây tốt nhất là ControlTile nên giữ tham chiếu GridCell
+                    }
+                }
+            }
+        }
+        // allTiles = newLayout;
     }
 }

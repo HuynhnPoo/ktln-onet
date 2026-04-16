@@ -12,6 +12,8 @@ public class PlayGameBtn : ButtonBase
         if (!hasPlayed)
         {
             PlayerPrefs.SetInt(StringManager.hasPlayed, 1);
+            PlayerPrefs.SetInt(StringManager.levelReached, 0);
+            PlayerPrefs.Save();
             UIManager.Instance.ChangeScene(UIManager.SceneType.GAMEOFFLINE);
         }
         else
@@ -20,9 +22,8 @@ public class PlayGameBtn : ButtonBase
            // Debug.Log(objBtn);
             objBtn.SetActive(true);
             PlayerPrefs.SetInt(StringManager.hasPlayed, 0);
+            PlayerPrefs.Save();
             UIManager.Instance.ChangeScene(UIManager.SceneType.GAMEOFFLINE);
         }
     }
-
-   
 }

@@ -8,8 +8,13 @@ public class RestartBtn : ButtonBase
     {
         Time.timeScale = 1; // chuyển cho game chạy được
 
+
         GameManager.Instance.IsPaused = false;
-        UIManager.Instance.ChangeScene(UIManager.SceneType.GAMEOFFLINE);
+
+        // Xác định quay lại scene nào dựa trên mode hiện tại
+        UIManager.SceneType targetScene = GameManager.Instance.IsOnlineMode ?
+            UIManager.SceneType.GAMEONLINE : UIManager.SceneType.GAMEOFFLINE;
+        UIManager.Instance.ChangeScene(targetScene);
 
     }
 }

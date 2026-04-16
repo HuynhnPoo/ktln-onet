@@ -6,7 +6,7 @@ public class NameDisplayTxt : TextBase
 {
     protected override void PrintText()
     {
-        text.SetText(UIManager.Instance.DisplayNameUI);
+        text.SetText(UIManager.Instance?.DisplayNameUI);
     }
 
     

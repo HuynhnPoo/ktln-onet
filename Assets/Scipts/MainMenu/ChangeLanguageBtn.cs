@@ -1,33 +1,22 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using UnityEngine.Localization.Settings;
 
 public class ChangeLanguageBtn : ButtonBase
 {
-    int index = 1;
+    int index = 1; // 1 = Tiếng Việt, 0 = Tiếng Anh
+
     public override void OnClick()
     {
-        if (index == 1)
-        {
+        // ✅ Truyền index hiện tại vào coroutine TRƯỚC khi đổi
+        StartCoroutine(SetLocalCoroutine(index));
 
-            StartCoroutine(SetLocalCoroutine());
-            index = 0; // vị trí ngonon ngữ tiếng anh
-        }
-        else if (index == 0)
-        {
-            StartCoroutine(SetLocalCoroutine());
-            index = 1; // vị trí ngôn ngữ tiếng việt
-        }
-
+        // Đổi index cho lần click tiếp theo
+        index = (index == 1) ? 0 : 1;
     }
 
-    IEnumerator SetLocalCoroutine()
+    IEnumerator SetLocalCoroutine(int localeIndex)
     {
         yield return LocalizationSettings.InitializationOperation;
-
-        LocalizationSettings.SelectedLocale = LocalizationSettings.AvailableLocales.Locales[index]; // đung để chuyển ngôn ngữ
-
+        LocalizationSettings.SelectedLocale = LocalizationSettings.AvailableLocales.Locales[localeIndex];
     }
-
 }

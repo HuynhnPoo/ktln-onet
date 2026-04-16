@@ -20,14 +20,6 @@ MonoBehaviour:
   gridHeight: 2
   cellSize: 1
   spacing: 0.5
-  useTimeLimit: 1
-  timeLimit: 60
-  useMoveLimit: 0
-  maxMoves: 30
-  maxBoostPairs: 0
-  movementType: 0
-  movementSpeed: 1
-  movementDirection: 1
   cells:
   - x: 0
     y: 0
@@ -45,4 +37,20 @@ MonoBehaviour:
     y: 1
     iconID: 0
     type: 1
+  useTimeLimit: 1
+  timeLimit: 60
   maxNormalTypes: 6
+  maxBoostPairs: 0
+  requireStarToWin: 1
+  scorePerNormalMatch: 100
+  scorePerBoostMatch: 250
+  useCombo: 1
+  comboMultiplierStep: 0.5
+  comboResetDelay: 3
+  maxComboCount: 8
+  scoreStar1: 500
+  scoreStar2: 1000
+  scoreStar3: 2000
+  gravityType: 0
+  gravitySpeed: 8
+  gravityLoop: 0

@@ -99,6 +99,42 @@ MonoBehaviour:
     m_Key: notiMenuOff_Txt
     m_Metadata:
       m_Items: []
+  - m_Id: 2876756284153856
+    m_Key: highScorePlay_Txt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2892545200496640
+    m_Key: showPassword_Txt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2946776104181760
+    m_Key: LevelPlayed_Txt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6861481382256640
+    m_Key: LevelSelection_Txt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7229300468883456
+    m_Key: LeadeBoard_Txt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7229504354000896
+    m_Key: store_Txt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7229622868254720
+    m_Key: Music_Txt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7229707597389824
+    m_Key: SoundFX_Txt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7299085357555712
+    m_Key: Coin_Txt
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

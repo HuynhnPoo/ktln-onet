@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
@@ -74,7 +74,11 @@ namespace PlayFab.PfEditor
         private void Stop()
         {
             EditorApplication.update -= Update;
-            _www.Dispose();
+            if (_www != null)
+            {
+                _www.Dispose();
+                _www = null; // Gán lại null sau khi dispose để an toàn
+            }
         }
 
         private float _timeCounter = 0;

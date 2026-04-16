@@ -1,45 +1,39 @@
-﻿using PlayFab;
+﻿using Photon.Pun;
+using Photon.Realtime;
+using PlayFab;
 using PlayFab.ClientModels;
+using PlayFab.Internal;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using UnityEngine;
+using UnityEngine.Networking;
 
 public class FormHander : MonoBehaviour
 {
+    [SerializeField] private EmailInput forgotEmailName; //panel quên mât khẩu
+
     [SerializeField] private EmailInput emailName;
     [SerializeField] private PasswordInput currentPassword;
     [SerializeField] private NameDisplayInput currentName;
     [SerializeField] private ConfirmInput confirmPass;
 
-   
+    private string playFabUserId;
 
-    private void Awake()
-    {
-
-    }
     private void OnEnable()
     {
         emailName = GetComponentInChildren<EmailInput>();
         currentPassword = GetComponentInChildren<PasswordInput>();
 
-        confirmPass = GetComponentInChildren<ConfirmInput>(true);
-        //   Debug.Log(confirmPass);
-    }
-    // Start is called before the first frame update
-    void Start()
-    {
+        confirmPass = GetComponentInChildren<ConfirmInput>(true);// true là để lấy compoment khi chưa được bật
+        UIManager.Instance.TitlleFormGame = StringManager.titlleLogin; ;
 
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Start()
     {
-        //if (Input.GetKeyDown(KeyCode.C))
-        //{
-        //    Debug.Log(emailName.EmailName + " " + currentPassword.Password);
-        //}
+        forgotEmailName = UIManager.Instance.uiFormCanvas.transform.GetChild(0).GetChild(1).GetComponentInChildren<EmailInput>(true);
     }
 
     public void Login()
@@ -48,7 +42,7 @@ public class FormHander : MonoBehaviour
         string password = this.currentPassword.Password;
 
         //if (string.IsNullOrEmpty(nameEmail) || string.IsNullOrEmpty(password) || password.Length < 6)
-        if (string.IsNullOrEmpty(nameEmail) || string.IsNullOrEmpty(password) )
+        if (string.IsNullOrEmpty(nameEmail) || string.IsNullOrEmpty(password))
         {
             UIManager.Instance.KeyNotificationTxt = StringManager.notifail;
             Debug.Log(UIManager.Instance.KeyNotificationTxt);
@@ -58,10 +52,11 @@ public class FormHander : MonoBehaviour
 
         var request = new LoginWithEmailAddressRequest
         {
+
             Email = nameEmail,
             Password = password
         };
-        PlayFabClientAPI.LoginWithEmailAddress(request, OnLoginSuccess, OnLoginFailure);
+        PlayFabClientAPI.LoginWithEmailAddress(request, OnLoginSuccess, OnLFailureAll);
 
     }
 
@@ -88,7 +83,7 @@ public class FormHander : MonoBehaviour
             RequireBothUsernameAndEmail = false
         };
 
-        PlayFabClientAPI.RegisterPlayFabUser(request, OnRegisterSuccess, OnLoginFailure); // thực hiên đăng kí và tải lên palyfabs
+        PlayFabClientAPI.RegisterPlayFabUser(request, OnRegisterSuccess, OnLFailureAll); // thực hiên đăng kí và tải lên palyfabs
     }
 
 
@@ -97,28 +92,47 @@ public class FormHander : MonoBehaviour
     {
         if (result != null)
         {
+
+
+            playFabUserId = result.PlayFabId;
             PlayFabDataManager.Instance.LoadPlayerData();
             UIManager.Instance.KeyNotificationTxt = StringManager.notiLoginSuccess;
 
             StartCoroutine(DisplayNotiCouroutine(1));
-           
+
             CheckHasNameDisplay();
 
-           // Debug.Log($"đăng nhập thành công{result}");
         }
     }
 
-    void CheckHasNameDisplay()
+    private void OnLFailureAll(PlayFabError error)
+    {
+        if (error.Error == PlayFabErrorCode.EmailAddressNotAvailable)
+        {
+            Debug.Log("Email đã tồn tại!");
+            UIManager.Instance.KeyNotificationTxt = StringManager.notifail;
+        }
+        else
+        {
+            Debug.Log("Lỗi khác: " + error.ErrorMessage);
+            UIManager.Instance.KeyNotificationTxt = StringManager.notifail;
+        }
+        StartCoroutine(DisplayNotiCouroutine(2));
+
+    }
+
+    void CheckHasNameDisplay() // hàm kiemer tra xem tài khoản có tên hiển thi trong game chưa ?
     {
 
         PlayFabClientAPI.GetPlayerProfile(new GetPlayerProfileRequest(), result =>
         {
-            string displayName=result.PlayerProfile.DisplayName;
+            // playFabUserId = result.PlayerProfile.PlayerId;
+            string displayName = result.PlayerProfile.DisplayName;
             if (string.IsNullOrEmpty(displayName))
             {
-               // Debug.Log("tên " + displayName);
-                UIManager.Instance.uiFormCanvas.transform.GetChild(0).gameObject.SetActive(false);
-                UIManager.Instance.uiFormCanvas.transform.GetChild(2).gameObject.SetActive(true);
+                // Debug.Log("tên " + displayName);
+                UIManager.Instance.uiFormCanvas.transform.GetChild(0).gameObject.SetActive(false); //ui form
+                UIManager.Instance.uiFormCanvas.transform.GetChild(3).gameObject.SetActive(true); // ui displayname
                 //  SubmitDisplayName(currentName.name);
                 currentName = GetComponentInChildren<NameDisplayInput>();
             }
@@ -133,7 +147,11 @@ public class FormHander : MonoBehaviour
                 Debug.Log(UIManager.Instance.DisplayNameUI);
             }
 
-        }, OnLoginFailure);
+            PhotonManager.Instance.GetPhotonToken(playFabUserId, displayName);
+        }, OnLFailureAll);
+
+
+        Debug.Log("play user id " + playFabUserId);
 
     }
 
@@ -141,7 +159,6 @@ public class FormHander : MonoBehaviour
     public void SubmitDisplayName()
     {
 
-        Debug.Log(this.currentName.NameDisplay);
         string nameDisplay = this.currentName.NameDisplay;
         var request = new UpdateUserTitleDisplayNameRequest
         {
@@ -149,9 +166,11 @@ public class FormHander : MonoBehaviour
         };
 
         Debug.Log("ten display la" + nameDisplay);
-        PlayFabClientAPI.UpdateUserTitleDisplayName(request, OnUpdateDisplaySucccess, OnLoginFailure); // cập nahatj tên user
+        PlayFabClientAPI.UpdateUserTitleDisplayName(request, OnUpdateDisplaySucccess, OnLFailureAll); // cập nahatj tên user
     }
 
+
+    // sử lí hiển thị tên nên màn hình
     private void OnUpdateDisplaySucccess(UpdateUserTitleDisplayNameResult result)
     {
         Debug.Log("tên của bạn hợp lệ");
@@ -159,6 +178,11 @@ public class FormHander : MonoBehaviour
 
         // Ẩn UI nhập tên và chuyển tiếp
         UIManager.Instance.DisplayNameUI = result.DisplayName;
+        UIManager.Instance.uiFormCanvas.transform.GetChild(0).gameObject.SetActive(true); //ui form
+        UIManager.Instance.uiFormCanvas.transform.GetChild(2).gameObject.SetActive(false); // ui displayname
+                                                                                           //  SubmitDisplayName(currentName.name);
+        UIManager.Instance.ChangeScene(UIManager.SceneType.ONLINEMAINMENU);
+
     }
 
 
@@ -169,6 +193,10 @@ public class FormHander : MonoBehaviour
         {
             UIManager.Instance.KeyNotificationTxt = StringManager.notiRegisterSuccess;
             PlayFabDataManager.Instance.LoadPlayerData();
+
+            UIManager.Instance.IsLogin = true; // dăng kí thành công trở về màn hình login
+            UIManager.Instance.uiFormCanvas.transform.GetChild(0).GetChild(0).GetChild(2).gameObject.SetActive(false);
+
             StartCoroutine(DisplayNotiCouroutine(1));
 
 
@@ -176,29 +204,12 @@ public class FormHander : MonoBehaviour
         }
     }
 
-    // hàm  cho các action thất bại
-    private void OnLoginFailure(PlayFabError error)
-    {
-        if (UIManager.Instance.IsLogin)
-        {
-            UIManager.Instance.KeyNotificationTxt = StringManager.notifail; // gắn string khi login fail
-            StartCoroutine(DisplayNotiCouroutine(1));
-            Debug.LogWarning("hien thi ra loi" + error.GenerateErrorReport());
-
-
-        }
-        else
-        {
-            UIManager.Instance.KeyNotificationTxt = StringManager.notifail;
-            StartCoroutine(DisplayNotiCouroutine(1));
-            Debug.LogWarning("hien thi ra loi" + error.GenerateErrorReport());
-
-        }
-    }
-
     // quên mật khẩu
-    public void ForgotPassword(string nameEmail)
+    public void ForgotPassword()
     {
+        string nameEmail = this.forgotEmailName.EmailName;
+
+        Debug.Log("hiên thi thực hiện" + nameEmail);
         if (string.IsNullOrEmpty(nameEmail))
         {
             return;
@@ -207,32 +218,34 @@ public class FormHander : MonoBehaviour
         var request = new SendAccountRecoveryEmailRequest
         {
             Email = nameEmail,
-            TitleId = PlayFabSettings.staticSettings.TitleId
+            TitleId = PlayFabSettings.TitleId,
+            //  EmailTemplateId = "20C0D1B4D718FCD4",
         };
 
-        PlayFabClientAPI.SendAccountRecoveryEmail(request, OnRecoverySuccess, OnLoginFailure);
+        PlayFabClientAPI.SendAccountRecoveryEmail(request, OnRecoverySuccess, OnLFailureAll);
     }
 
-   public  void DisplayNoti()
+    // hiển thị thông báo
+    IEnumerator DisplayNotiCouroutine(int time)
     {
-      
-
-    }
-
-   IEnumerator DisplayNotiCouroutine(int time)
-    {
-        Debug.Log("thuc hien bat");
-        UIManager.Instance.uiFormCanvas.transform.GetChild(1).GetChild(0).gameObject.SetActive(true);
+        Debug.Log("thực hiên notti");
+        //  Debug.Log("thuc hien bat");
+        // Debug.Log(UIManager.Instance.uiFormCanvas.transform.GetChild(1).name);
+        UIManager.Instance.uiFormCanvas.transform.GetChild(2).GetChild(0).gameObject.SetActive(true);
 
         yield return new WaitForSeconds(time);
-        Debug.Log("thuwc hien tawt");
-        UIManager.Instance.uiFormCanvas.transform.GetChild(1).GetChild(0).gameObject.SetActive(false);
+        // Debug.Log("thuwc hien tawt");
+        UIManager.Instance.uiFormCanvas.transform.GetChild(2).GetChild(0).gameObject.SetActive(false);
     }
 
+
+    //hàm thực hiện forgot mật khẩu
     private void OnRecoverySuccess(SendAccountRecoveryEmailResult result)
     {
-        //statusText.text = "email khôi phục bạn hãy kiểm tra hòm thư " + result;
-        //statusText.color = Color.yellow;
+        Debug.Log("thuc hien forgot thanh conog");
+        UIManager.Instance.KeyNotificationTxt = StringManager.notiForgotSuccess;
     }
+
+
 
 }

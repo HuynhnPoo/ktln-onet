@@ -103,6 +103,42 @@ MonoBehaviour:
     m_Localized: "kh\xF4ng c\xF3 internet !"
     m_Metadata:
       m_Items: []
+  - m_Id: 2876756284153856
+    m_Localized: "\u0110i\u1EC3m cao nh\u1EA5t:"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2892545200496640
+    m_Localized: "Hi\u1EC7n m\u1EADt kh\u1EA9u"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2946776104181760
+    m_Localized: "M\xE0n \u0111\xE3 ch\u01A1i:"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6861481382256640
+    m_Localized: "M\xE0n Ch\u01A1i"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7229300468883456
+    m_Localized: "B\u1EA3ng x\u1EBFp h\u1EA1ng"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7229504354000896
+    m_Localized: "C\u1EEDa h\xE0ng"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7229622868254720
+    m_Localized: "\xC2m thanh:"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7229707597389824
+    m_Localized: "Hi\u1EC7u \u1EE9ng \xE2m thanh:"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7299085357555712
+    m_Localized: "Ti\u1EC1n:"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

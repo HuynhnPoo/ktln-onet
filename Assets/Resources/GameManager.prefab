@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 1776133459605982834}
   - component: {fileID: 5402870089926385176}
   - component: {fileID: 1055523659636414484}
+  - component: {fileID: 7263043547049256226}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -91,7 +92,19 @@ MonoBehaviour:
     currentTileId: tile_default
     currentLineId: line_default
     inventory: []
-    highestLevel: 1
+    highestLevel: 0
+--- !u!114 &7263043547049256226
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1349308568689679755}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3fcdb8a5529c0bf4aa505c5a1aa1dddf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5554731643348170212
 GameObject:
   m_ObjectHideFlags: 0
