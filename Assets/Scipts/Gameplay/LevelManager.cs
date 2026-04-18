@@ -44,7 +44,7 @@ public class LevelManager : MonoBehaviour, ICompoment
 
         Debug.Log(levelToLoad);
 
-        LoadCurrentLevel(10); // nhớ set id trong SO
+        LoadCurrentLevel(9); // nhớ set id trong SO
     }
 
     public void LoadCurrentLevel(int currentLevel)

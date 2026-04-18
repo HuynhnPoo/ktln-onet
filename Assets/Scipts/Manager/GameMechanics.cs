@@ -235,10 +235,10 @@ public static class GameMechanics
                 MoveHorizontal(board, gridCell, false); // isLeft = false
                 break;
             case BoardGravityType.CenterCollapse:
-                MoveCenter(board, gridCell, true);
+                MoveCenterCollapse(board, gridCell);
                 break;
             case BoardGravityType.SplitOutward:
-                MoveCenter(board, gridCell, false);
+               MoveSplitOutward (board, gridCell);
                 break;
         }
     }
@@ -305,128 +305,206 @@ public static class GameMechanics
         }
     }
 
-    private static void MoveHorizontal(Board board, GridCell[,] grid, bool isDown)
+    // --- LOGIC DI CHUYỂN NGANG (Trái/Phải) ---
+    private static void MoveHorizontal(Board board, GridCell[,] grid, bool isLeft)
     {
         int width = board.Width;
         int height = board.Height;
 
+        int dir = isLeft ? 1 : -1;
+        int startX = isLeft ? 0 : width - 1;
+        int endX = isLeft ? width : -1;
 
-        // isDown = true: Rơi xuống (từ trên xuống dưới)
-        // isDown = false: Bay lên (từ dưới lên trên)
-        int dir = isDown ? 1 : -1;
-        int startY = isDown ? 0 : height - 1;
-        int endX = isDown ? height : -1;
+        int moveCount = 0;
 
         for (int y = 0; y < height; y++)
         {
-            for (int x = startY; x != endX; x += dir)
+            Debug.Log($"<color=gray>  Hàng {y}: quét từ {startX}...</color>");
+
+            for (int x = startX; x != endX; x += dir)
             {
                 if (grid[x, y].IsEmpty)
                 {
-                    // Tìm tile đầu tiên ở phía trên/dưới ô trống này
-                    for (int nextX = y + dir; nextX != endX; nextX += dir)
+                    for (int nextX = x + dir; nextX != endX; nextX += dir)
                     {
-                        // Nếu gặp vật cản cố định (type 3), dừng lại
                         if (grid[nextX, y].IsObstacle) break;
 
                         if (grid[nextX, y].IsMatchable)
                         {
                             ExecuteMove(board, grid, nextX, y, x, y);
+                            moveCount++;
                             break;
                         }
                     }
                 }
             }
         }
+
+        Debug.Log($"<color=green>✓ MoveHorizontal hoàn thành. Tổng di chuyển: {moveCount} tiles</color>");
     }
 
-    private static void MoveCenter(Board board, GridCell[,] grid, bool isCollapse)
+    //
+    private static void MoveCenterCollapse(Board board, GridCell[,] grid)
     {
         int width = board.Width;
         int height = board.Height;
-
-        int centerX = width / 2;
-        int centerY = height / 2;
-
-        Debug.Log($"<color=gray>  Tâm bàn: ({centerX}, {centerY})</color>");
-
         int moveCount = 0;
 
+        // 1. Xác định tọa độ ranh giới của vùng tâm (Ví dụ vùng 4x4 hoặc 2x2 tùy kích thước bàn)
+        // Nếu bạn muốn cố định 4x4, hãy dùng: int centerRange = 2; 
+        // Ở đây mình tính toán linh hoạt theo kích thước bàn:
+        int midX = width / 2;
+        int midY = height / 2;
+
+        // HÚT THEO TRỤC X (Dồn vào giữa cột)
+        for (int y = 0; y < height; y++)
+        {
+            // --- Nửa bên trái: Dồn sang PHẢI (về phía midX) ---
+            for (int x = midX - 1; x >= 0; x--)
+            {
+                if (grid[x, y].IsEmpty)
+                {
+                    // Tìm tile từ phía bên trái của ô trống này (xa tâm hơn) để kéo về tâm
+                    for (int nextX = x - 1; nextX >= 0; nextX--)
+                    {
+                        if (grid[nextX, y].IsObstacle) break;
+                        if (grid[nextX, y].IsMatchable)
+                        {
+                            ExecuteMove(board, grid, nextX, y, x, y);
+                            moveCount++;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // --- Nửa bên phải: Dồn sang TRÁI (về phía midX) ---
+            for (int x = midX; x < width; x++)
+            {
+                if (grid[x, y].IsEmpty)
+                {
+                    // Tìm tile từ phía bên phải của ô trống này (xa tâm hơn) để kéo về tâm
+                    for (int nextX = x + 1; nextX < width; nextX++)
+                    {
+                        if (grid[nextX, y].IsObstacle) break;
+                        if (grid[nextX, y].IsMatchable)
+                        {
+                            ExecuteMove(board, grid, nextX, y, x, y);
+                            moveCount++;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        // HÚT THEO TRỤC Y (Dồn vào giữa hàng)
+        // Lưu ý: Sau khi dồn ngang, ta dồn dọc để các ô tập trung vào 4 ô trung tâm nhất
         for (int x = 0; x < width; x++)
+        {
+            // --- Nửa phía trên: Dồn xuống DƯỚI (về phía midY) ---
+            for (int y = midY - 1; y >= 0; y--)
+            {
+                if (grid[x, y].IsEmpty)
+                {
+                    for (int nextY = y - 1; nextY >= 0; nextY--)
+                    {
+                        if (grid[x, nextY].IsObstacle) break;
+                        if (grid[x, nextY].IsMatchable)
+                        {
+                            ExecuteMove(board, grid, x, nextY, x, y);
+                            moveCount++;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // --- Nửa phía dưới: Dồn lên TRÊN (về phía midY) ---
+            for (int y = midY; y < height; y++)
+            {
+                if (grid[x, y].IsEmpty)
+                {
+                    for (int nextY = y + 1; nextY < height; nextY++)
+                    {
+                        if (grid[x, nextY].IsObstacle) break;
+                        if (grid[x, nextY].IsMatchable)
+                        {
+                            ExecuteMove(board, grid, x, nextY, x, y);
+                            moveCount++;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        Debug.Log($"<color=green>✓ Center Collapse hoàn thành. Tổng di chuyển: {moveCount} tiles</color>");
+    }
+    
+
+    private static void MoveSplitOutward(Board board, GridCell[,] grid)
+    {
+        int width = board.Width;
+        int height = board.Height;
+        int moveCount = 0;
+
+        int centerX = width / 2;
+
+        Debug.Log($"<color=gray>  Tâm bàn: x = {centerX}</color>");
+
+        // ✅ NỬA TRÁI: Quét từ PHẢI sang TRÁI
+        // Tiles ở nửa trái di chuyển sang TRÁI
+        Debug.Log($"<color=cyan>  Xử lý nửa TRÁI (x < {centerX})</color>");
+        for (int x = centerX - 1; x >= 0; x--)
         {
             for (int y = 0; y < height; y++)
             {
                 if (grid[x, y].IsEmpty)
                 {
-                    Vector2Int emptyPos = new Vector2Int(x, y);
-                    Vector2Int tilePos = isCollapse
-                        ? FindNearestTile(emptyPos, centerX, centerY, width, height, grid)
-                        : FindFarthestTile(emptyPos, centerX, centerY, width, height, grid);
-
-                    if (tilePos.x != -1)
+                    // Tìm tile phía PHẢI (hướng di chuyển ra)
+                    for (int nextX = x + 1; nextX < width; nextX++)
                     {
-                        ExecuteMove(board, grid, tilePos.x, tilePos.y, x, y);
-                        moveCount++;
+                        if (grid[nextX, y].IsObstacle) break;
+
+                        if (grid[nextX, y].IsMatchable)
+                        {
+                            ExecuteMove(board, grid, nextX, y, x, y);
+                            moveCount++;
+                            break;
+                        }
                     }
                 }
             }
         }
 
-        Debug.Log($"<color=green>✓ MoveCenter hoàn thành. Tổng di chuyển: {moveCount} tiles</color>");
-    }
-
-    private static Vector2Int FindNearestTile(Vector2Int empty, int centerX, int centerY,
-                                               int width, int height, GridCell[,] grid)
-    {
-        Vector2Int nearest = new Vector2Int(-1, -1);
-        float minDistance = float.MaxValue;
-
-        for (int x = 0; x < width; x++)
+        // ✅ NỬA PHẢI: Quét từ TRÁI sang PHẢI
+        // Tiles ở nửa phải di chuyển sang PHẢI
+        Debug.Log($"<color=cyan>  Xử lý nửa PHẢI (x >= {centerX})</color>");
+        for (int x = centerX; x < width; x++)
         {
             for (int y = 0; y < height; y++)
             {
-                if (grid[x, y].IsMatchable)
+                if (grid[x, y].IsEmpty)
                 {
-                    float dist = Vector2Int.Distance(new Vector2Int(x, y), empty);
-                    float toCenter = Vector2Int.Distance(new Vector2Int(x, y), new Vector2Int(centerX, centerY));
-
-                    if (dist > 0 && toCenter < minDistance)
+                    // Tìm tile phía TRÁI (hướng di chuyển ra)
+                    for (int nextX = x - 1; nextX >= 0; nextX--)
                     {
-                        minDistance = toCenter;
-                        nearest = new Vector2Int(x, y);
+                        if (grid[nextX, y].IsObstacle) break;
+
+                        if (grid[nextX, y].IsMatchable)
+                        {
+                            ExecuteMove(board, grid, nextX, y, x, y);
+                            moveCount++;
+                            break;
+                        }
                     }
                 }
             }
         }
-        return nearest;
+
+        Debug.Log($"<color=green>✓ MoveSplitOutward hoàn thành. Tổng di chuyển: {moveCount} tiles</color>");
     }
 
-    private static Vector2Int FindFarthestTile(Vector2Int empty, int centerX, int centerY,
-                                                int width, int height, GridCell[,] grid)
-    {
-        Vector2Int farthest = new Vector2Int(-1, -1);
-        float maxDistance = float.MinValue;
-
-        for (int x = 0; x < width; x++)
-        {
-            for (int y = 0; y < height; y++)
-            {
-                if (grid[x, y].IsMatchable)
-                {
-                    float dist = Vector2Int.Distance(new Vector2Int(x, y), empty);
-                    float fromCenter = Vector2Int.Distance(new Vector2Int(x, y), new Vector2Int(centerX, centerY));
-
-                    if (dist > 0 && fromCenter > maxDistance)
-                    {
-                        maxDistance = fromCenter;
-                        farthest = new Vector2Int(x, y);
-                    }
-                }
-            }
-        }
-        return farthest;
-    }
-
-
-
+  
 }
