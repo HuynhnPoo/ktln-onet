@@ -139,6 +139,22 @@ MonoBehaviour:
     m_Localized: 'Coin:'
     m_Metadata:
       m_Items: []
+  - m_Id: 10120462921900032
+    m_Localized: Confirm
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10120605830225920
+    m_Localized: 'Your Name :'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14485360225296384
+    m_Localized: Buy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14485477661614080
+    m_Localized: Use
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

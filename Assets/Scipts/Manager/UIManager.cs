@@ -1,8 +1,10 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+
 
 public class UIManager : SingletonBase<UIManager>
 {
@@ -10,10 +12,13 @@ public class UIManager : SingletonBase<UIManager>
     private static bool isLogin = true;
     public bool IsLogin { get => isLogin; set => isLogin = value; }
 
+    public string StatusResultsOnline {  get; set; }   
+
 
     public static string titlleFormGame = "";
+  
     public Action<string> OnTitlleChanged;
-    public string TitlleFormGame 
+    public string TitlleFormGame  // tiêu đề cau form
     {
         get => titlleFormGame;
         set
@@ -31,9 +36,25 @@ public class UIManager : SingletonBase<UIManager>
         set
         {
             statusKeyGameStr = value;
-            GameManager.Instance.OnChangedStatusGame.Invoke();
+            Debug.Log("hien ra status "+statusKeyGameStr);
+            GameManager.Instance.OnChangedStatusGame?.Invoke();
         }
     }
+
+    public Action<string> OnStatusResultOnline;
+
+    private static string statusKeyGameOnlineStr = ""; //khi game win hay over
+    public string StatusKeyGameOnlineStr
+    {
+        get => statusKeyGameOnlineStr;
+        set
+        {
+            statusKeyGameOnlineStr = value;
+            OnStatusResultOnline?.Invoke(statusKeyGameOnlineStr);
+            
+        }
+    }
+
     public string DisplayNameUI { get; set; } = "null";
 
     public Action<string> OnNotificationChanged;
@@ -65,6 +86,7 @@ public class UIManager : SingletonBase<UIManager>
     [SerializeField] public GameObject uiCenterGameoffCanvas { get; private set; }
     [SerializeField] public GameObject uiFormCanvas { get; private set; }
     [SerializeField] public GameObject uiOnlinePlayGameCanvas { get; private set; }
+    [SerializeField] public GameObject uiOnlineMatchPlayGameCanvas { get; private set; }
 
 
     private void OnEnable()
@@ -114,7 +136,15 @@ public class UIManager : SingletonBase<UIManager>
             this.uiOnlinePlayGameCanvas = FindGameObjectByNameHide.FindGameObjectByName("Online_Front_Canvas");
             //   Debug.Log(this.uiFormCanvas);
             // Debug.Log(uiCenterCanvas);
+        }  
+        else if (SceneManager.GetActiveScene().name == SceneType.MATCHINGONLINE.ToString())
+        {
+            this.uiOnlineMatchPlayGameCanvas = FindGameObjectByNameHide.FindGameObjectByName("UI-Center");
+            
+            //   Debug.Log(this.uiFormCanvas);
+            // Debug.Log(uiCenterCanvas);
         }
+        
     }
 
     public AsyncOperation ChangeScene(SceneType scene)

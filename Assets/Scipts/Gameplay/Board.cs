@@ -1,4 +1,5 @@
 ﻿
+using Photon.Pun;
 using System;
 using Unity.Burst.Intrinsics;
 using Unity.Jobs.LowLevel.Unsafe;
@@ -9,7 +10,7 @@ public class Board
 {
     private int width;
     private int height;
-    public int Height=> height;
+    public int Height => height;
 
     public int Width => width;
     private float cellSize;
@@ -17,7 +18,7 @@ public class Board
 
     private LevelData levelData;
     public GridCell[,] gridCell;
-  
+
     public Action<GridCell, Vector3> OnCellMoved;
 
     public Board(int wight, int height, float cellSize, float spacing, LevelData levelData)
@@ -33,9 +34,9 @@ public class Board
         {
             for (int y = 0; y < this.height; y++)
             {
-               GridCell cell =levelData.GetCell(x, y);
+                GridCell cell = levelData.GetCell(x, y);
 
-                if(cell !=null)
+                if (cell != null)
                 {
                     gridCell[x, y] = new GridCell
                     {
@@ -99,6 +100,7 @@ public class Board
         return new Vector3(x * step + offsetX, y * step + offsetY, 0f);
     }
 
+    // hafm kieem tra xem tile còn không
     public void CheckLevelProgress(int width, int height)
     {
         int remaining = 0;
@@ -115,7 +117,13 @@ public class Board
 
         if (remaining == 0)
         {
-            GameManager.Instance.GameWon();
+            if (PhotonNetwork.InRoom)
+            {
+                Debug.Log("tile đã hết hien thi trnag thái ?");
+                OnlineMatchManager.OnResultStatus?.Invoke();
+            }
+            else
+                GameManager.Instance.GameWon();
         }
 
     }
@@ -129,7 +137,7 @@ public class Board
         // 2. Kiểm tra nếu level có yêu cầu di chuyển tile
         if (levelData.gravityType != BoardGravityType.None)
         {
-         //  GameMechanics.ApplyGravity(levelData.gravityType);
+            //  GameMechanics.ApplyGravity(levelData.gravityType);
         }
 
         // 3. Kiểm tra xem đã thắng chưa

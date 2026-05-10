@@ -39,6 +39,10 @@ MonoBehaviour:
   - DestroySpaceship
   - Fire
   - RespawnSpaceship
+  - RPC_SwitchTurn
+  - RPC_AddScore
+  - RPC_HandleMatch
+  - RPC_OnPlayerForfeit
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

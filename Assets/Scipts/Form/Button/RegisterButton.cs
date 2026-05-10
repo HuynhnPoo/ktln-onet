@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,7 +8,6 @@ public class RegisterButton : ButtonBase
 
     public override void OnClick()
     {
-          UIManager.Instance.TitlleFormGame = StringManager.titlleRegister;
         if (!UIManager.Instance.IsLogin)
         {
             Debug.Log(UIManager.Instance.IsLogin);
@@ -19,7 +18,8 @@ public class RegisterButton : ButtonBase
         else
         {
             UIManager.Instance.IsLogin = false;
-            UIManager.Instance.uiFormCanvas.transform.GetChild(0).GetChild(0).GetChild(2).gameObject.SetActive(true);
+            UIManager.Instance.TitlleFormGame = StringManager.titlleRegister; // chuyển title form
+            UIManager.Instance.uiFormCanvas.transform.GetChild(0).GetChild(0).GetChild(2).gameObject.SetActive(true); // chuyên sang register
 
         }
     }

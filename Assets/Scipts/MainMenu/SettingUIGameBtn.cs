@@ -11,7 +11,6 @@ public class SettingUIGameBtn : ButtonBase
     {
         if (isOpenSettingPanel)
         {
-
             // GameObject objBtn = UIManager.Instance.uiCenterMainMenuCanvas.transform.GetChild(1).gameObject;
             pausePanel.SetActive(true);
             isOpenSettingPanel = false;

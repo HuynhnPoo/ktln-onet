@@ -1,4 +1,6 @@
 ﻿using JetBrains.Annotations;
+using Photon.Pun;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -8,6 +10,7 @@ public class LevelManager : MonoBehaviour, ICompoment
 {
     [SerializeField] private LevelDatabaseList allLevel;
     private LevelData currentLevelData;
+    public static Action<int> OnRequestLoadLevel;
 
     private bool[,] levelLayout;
 
@@ -15,38 +18,59 @@ public class LevelManager : MonoBehaviour, ICompoment
 
 
     public bool isOnlineMode;
+    public bool isPvPMode;
     private void Awake()
     {
         LoadCompoment();
-        
+
+    }
+    private void OnEnable()
+    {
+        OnRequestLoadLevel += HandlePvPLoad;
+    }
+    private void OnDisable()
+    {
+        OnRequestLoadLevel -= HandlePvPLoad;
     }
     private void Start()
     {
         // LoadCurrentLevel(0);
-        CofnirmStatusGame();
+        if (!isPvPMode)
+            CofnirmStatusGame();
+        else
+            CheckForRoomLevel();
     }
 
-   public void CofnirmStatusGame()
+    public void CofnirmStatusGame()
     {
         int levelToLoad = 0;
 
         if (isOnlineMode && PlayFabDataManager.Instance.playerData != null)
         {
             // Nếu Online: Lấy level cao nhất hiện tại của người dùng
-            levelToLoad = PlayFabDataManager.Instance.playerData.highestLevel - 1;
+            levelToLoad = PlayFabDataManager.Instance.playerData.highestLevel;
         }
         else
         {
             // Nếu Offline: Lấy từ GameManager (thường là từ Local Save hoặc biến tạm)
             levelToLoad = GameManager.Instance.CurrentLevel;
-        
+
         }
 
         Debug.Log(levelToLoad);
 
-        LoadCurrentLevel(9); // nhớ set id trong SO
+        LoadCurrentLevel(10); // nhớ set id trong SO
     }
 
+    private void CheckForRoomLevel()
+    {
+        // Nếu đã có LevelID trong CustomProperties của phòng, nạp luôn
+        if (PhotonNetwork.InRoom && PhotonNetwork.CurrentRoom.CustomProperties.TryGetValue("LevelID", out object levelID))
+        {
+            Debug.Log("LevelManager: Tìm thấy LevelID sẵn trong phòng: " + levelID);
+            LoadCurrentLevel((int)levelID);
+        }
+    }
     public void LoadCurrentLevel(int currentLevel)
     {
 
@@ -62,8 +86,8 @@ public class LevelManager : MonoBehaviour, ICompoment
 
         if (currentLevelData != null)
         {
-         //   Debug.Log("độ khó là "+ currentLevelData.gravityType);
-            GameMechanics.Init((int)currentLevelData.timeLimit, currentLevelData.scorePerNormalMatch,currentLevelData.gravityType);
+            //   Debug.Log("độ khó là "+ currentLevelData.gravityType);
+            GameMechanics.Init((int)currentLevelData.timeLimit, currentLevelData.scorePerNormalMatch, currentLevelData.gravityType);
             // Đảm bảo dữ liệu cell không bị rỗng trước khi vẽ
             currentLevelData.EnsureGridSize();
 
@@ -71,12 +95,20 @@ public class LevelManager : MonoBehaviour, ICompoment
             // Gọi GridManager để vẽ
             // Giả sử bạn có tham chiếu tới GridManager qua GameManager hoặc kéo trực tiếp
             GridManager grid = GameManager.Instance.gridManager;
-            Debug.Log("grid :"+ grid);
+            Debug.Log("grid :" + grid);
             GameManager.Instance.gridManager.SpawnGridFromLevel(currentLevelData);
         }
 
     }
 
+    private void HandlePvPLoad(int levelID)
+    {
+        if (isPvPMode)
+        {
+            Debug.Log("PvP Mode: Nhận được Level ID từ Event: " + levelID);
+            LoadCurrentLevel(levelID);
+        }
+    }
     public void LoadCompoment()
     {
         if (allLevel == null)
@@ -86,6 +118,8 @@ public class LevelManager : MonoBehaviour, ICompoment
 
 
     }
+
+    //void sy
 
     /*private void CreateDefaultLayout()
     {

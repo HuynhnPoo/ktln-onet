@@ -19,13 +19,19 @@ public class GameManager : SingletonBase<GameManager>
     private int highScore = 0;
     public int HighScore { get => highScore; set => highScore = value; }
 
+    private int highScoreOnline = 0;
+    public int HighScoreOnline { get => highScoreOnline; set => highScoreOnline = value; }
+
+    private int totalCoinOnline = 0;
+    public int TotalCoinOnline { get => totalCoinOnline; set => totalCoinOnline = value; } // cho online
+
     private static int coin = 0;
-    public int Coin { get => coin; set => coin = value; }
+    public int Coin { get => coin; set => coin = value; } // tính coin tạm
     public int CurrentLevel { get; set; }
 
-    private static bool isGameWin = false;
+    private bool isGameWin = false;
     public bool IsGameWin { get => isGameWin; set => isGameWin = value; }
-    private static bool isGameOver = false;
+    private bool isGameOver = false;
     public bool IsGameOver { set => isGameOver = value; get => isGameOver; }
 
     private static bool isPaused = false;
@@ -36,6 +42,9 @@ public class GameManager : SingletonBase<GameManager>
 
     public Action OnChangedStatusGame { get; set; }
 
+
+    private static bool isMyturn;
+    public bool IsMyturn { get => isMyturn; set => isMyturn = value; }
 
     private void OnEnable()
     {
@@ -64,8 +73,10 @@ public class GameManager : SingletonBase<GameManager>
     private void Init()
     {
         isGameOver = false;
-        IsGameWin = false;
-        if (SceneManager.GetActiveScene().name == SceneType.GAMEOFFLINE.ToString() || SceneManager.GetActiveScene().name == SceneType.GAMEONLINE.ToString())
+        isGameWin = false;
+        if (SceneManager.GetActiveScene().name == SceneType.GAMEOFFLINE.ToString()
+            || SceneManager.GetActiveScene().name == SceneType.GAMEONLINE.ToString()
+            || SceneManager.GetActiveScene().name == SceneType.MATCHINGONLINE.ToString())
         {
             this.gridManager = FindAnyObjectByType<GridManager>();
 
@@ -112,10 +123,12 @@ public class GameManager : SingletonBase<GameManager>
         isGameOver = true;
         if (IsOnlineMode)
         {
+            PlayFabDataManager.Instance.SavePlayerData();
             GameObject obj = UIManager.Instance.uiOnlinePlayGameCanvas.transform.GetChild(2).GetChild(1).gameObject;// panel game oveer được bật
             GameObject nextLevelButton = obj.transform.GetChild(0).GetChild(2).gameObject;
             obj.SetActive(true);
             nextLevelButton.SetActive(false);
+
         }
         else
         {
@@ -135,13 +148,18 @@ public class GameManager : SingletonBase<GameManager>
 
         isGameWin = true;
 
+
+
         if (IsOnlineMode)
         {
+            PlayFabDataManager.Instance.SavePlayerData();
             if (PlayFabDataManager.Instance.playerData.highestLevel == CurrentLevel)
             {
                 PlayFabDataManager.Instance.playerData.highestLevel += 1;
             }
             UIManager.Instance.uiOnlinePlayGameCanvas.transform.GetChild(2).GetChild(1).gameObject.SetActive(true);
+            UIManager.Instance.uiOnlinePlayGameCanvas.transform.GetChild(0).GetChild(1).gameObject.SetActive(false);
+            //OnChangedStatusGame?.Invoke();
         }
         else
         {
@@ -169,6 +187,11 @@ public class GameManager : SingletonBase<GameManager>
             highScore = score;
             PlayerPrefs.SetInt(StringManager.highScoreStr, highScore);
         }
+    }
+
+    public bool CanIPlay()
+    {
+        return isMyturn;
     }
 
 }

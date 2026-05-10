@@ -13,6 +13,9 @@ public class ExitBtn : ButtonBase
             PlayFabDataManager.Instance.SavePlayerData();
         }
 
-        UIManager.Instance.ChangeScene(UIManager.SceneType.MAINMENU);
+        UIManager.SceneType sceneType = GameManager.Instance.IsOnlineMode ?
+            UIManager.SceneType.ONLINEMAINMENU : UIManager.SceneType.MAINMENU;
+
+        UIManager.Instance.ChangeScene(sceneType);
     }
 }

@@ -21,8 +21,6 @@ public class ForgotButton : ButtonBase
     }
     public override void OnClick()
     {
-        Debug.Log("hiên thi thực hiện");
-        UIManager.Instance.TitlleFormGame = StringManager.titlleForgot;
-        hander?.ForgotPassword();
+        hander?.ForgotPassword(); // thuwkc hiên forgot
     }
 }

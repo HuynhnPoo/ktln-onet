@@ -14,6 +14,7 @@ public class NewPlayOnlineButton : ButtonBase
             menuLevelButton = UIManager.Instance.uiCenterMainMenuOnlineCanvas.transform.GetChild(1).GetChild(0).GetChild(1).gameObject;
         }
 
+        Debug.Log(PlayFabDataManager.Instance.playerData.highestLevel);
         // KIỂM TRA BAN ĐẦU: Chỉ hiện nếu level cao nhất > 0 (nghĩa là đã từng chơi qua)
         if (PlayFabDataManager.Instance.playerData != null)
         {

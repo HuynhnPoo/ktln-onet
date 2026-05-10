@@ -197,10 +197,18 @@ public static class GameMechanics
     public static void AddReward(PlayerData playerData, int goldAmount, int scoreAmount)
     {
         if (playerData == null) return;
-        playerData.gold += goldAmount;
+
+        GameManager.Instance.TotalCoinOnline += goldAmount;
+        playerData.gold = GameManager.Instance.TotalCoinOnline;
         GameManager.Instance.Coin += goldAmount;
         Debug.Log("thực hiện add scpre và coin" + GameManager.Instance.Coin);
-        playerData.score += scoreAmount;
+
+        GameManager.Instance.Score += scoreAmount;
+        if(GameManager.Instance.Score > GameManager.Instance.HighScoreOnline)
+
+        playerData.score += GameManager.Instance.Score;
+        GameManager.Instance.HighScoreOnline =playerData.score;
+        PlayFabDataManager.Instance.SavePlayerData();
     }
 
     // update điềm số  khi online

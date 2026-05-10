@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Photon.Pun;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -62,6 +63,13 @@ public class GridManager : MonoBehaviour
     }
     public void SpawnGridFromLevel(LevelData level)
     {
+        // Lấy Seed từ Room Properties
+        if (PhotonNetwork.InRoom && PhotonNetwork.CurrentRoom.CustomProperties.ContainsKey("LevelSeed"))
+        {
+            int seed = (int)PhotonNetwork.CurrentRoom.CustomProperties["LevelSeed"];
+            UnityEngine.Random.InitState(seed); // QUAN TRỌNG: Mọi máy sẽ Random ra kết quả y hệt nhau
+        }
+
         transform.position = Vector3.zero;
         levelData = level;
         // 1. Xóa các Tile cũ
@@ -203,6 +211,12 @@ public class GridManager : MonoBehaviour
 
     public void SelectTile(int x, int y)
     {
+        if (PhotonNetwork.InRoom && !GameManager.Instance.CanIPlay())
+        {
+            Debug.Log("Không phải lượt của bạn!");
+            return;
+        }
+
         Debug.Log("x va y" + y + x);
         if (selectedTiled == null)
         {
@@ -226,8 +240,17 @@ public class GridManager : MonoBehaviour
             if (gridPath != null)
             {
 
-                HandleMatch(gridPath);
-                GameMechanics.AddScore(GameManager.Instance.AmountScore);
+                if (PhotonNetwork.InRoom)
+                {
+                    // Gửi RPC tới TẤT CẢ người chơi (kể cả chính mình)
+                    OnlineMatchManager.OnMatchFound?.Invoke(gridPath);
+                }
+                else
+                {
+                    HandleMatch(gridPath);
+                    GameMechanics.AddScore(GameManager.Instance.AmountScore);
+                }
+
 
                 if (PlayFabDataManager.Instance.playerData != null) // chỉ thực hiện khi online được đnăg nhập
                 {
@@ -246,8 +269,9 @@ public class GridManager : MonoBehaviour
 
     }
 
-    private void HandleMatch(List<Vector2Int> gridPath)
+    public void HandleMatch(List<Vector2Int> gridPath)
     {
+      
         // Chuyển tọa độ Grid sang World để vẽ Line
         Vector3[] worldPoints = new Vector3[gridPath.Count];
         //Vector3 centerOffset = Board.GetCenterOffset();
@@ -310,4 +334,6 @@ public class GridManager : MonoBehaviour
         }
         // allTiles = newLayout;
     }
+
+    
 }

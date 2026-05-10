@@ -25,146 +25,182 @@ MonoBehaviour:
     y: 0
     iconID: 0
     type: 0
+    linkedTile: {fileID: 0}
   - x: 0
     y: 0
     iconID: 0
     type: 0
+    linkedTile: {fileID: 0}
   - x: 0
     y: 0
     iconID: 0
     type: 0
+    linkedTile: {fileID: 0}
   - x: 0
     y: 0
     iconID: 0
     type: 0
+    linkedTile: {fileID: 0}
   - x: 0
     y: 0
     iconID: 0
     type: 0
+    linkedTile: {fileID: 0}
   - x: 0
     y: 0
     iconID: 0
     type: 0
+    linkedTile: {fileID: 0}
   - x: 0
     y: 0
     iconID: 0
     type: 0
+    linkedTile: {fileID: 0}
   - x: 0
     y: 0
     iconID: 0
     type: 0
+    linkedTile: {fileID: 0}
   - x: 0
     y: 0
     iconID: 0
     type: 0
+    linkedTile: {fileID: 0}
   - x: 0
     y: 0
     iconID: 0
     type: 0
+    linkedTile: {fileID: 0}
   - x: 0
     y: 0
     iconID: 0
     type: 0
+    linkedTile: {fileID: 0}
   - x: 0
     y: 0
     iconID: 0
     type: 0
+    linkedTile: {fileID: 0}
   - x: 0
     y: 0
     iconID: 0
     type: 0
+    linkedTile: {fileID: 0}
+  - x: 0
+    y: 0
+    iconID: 0
+    type: 1
+    linkedTile: {fileID: 0}
+  - x: 0
+    y: 0
+    iconID: 0
+    type: 1
+    linkedTile: {fileID: 0}
+  - x: 0
+    y: 0
+    iconID: 0
+    type: 1
+    linkedTile: {fileID: 0}
+  - x: 0
+    y: 0
+    iconID: 0
+    type: 1
+    linkedTile: {fileID: 0}
   - x: 0
     y: 0
     iconID: 0
     type: 0
+    linkedTile: {fileID: 0}
   - x: 0
     y: 0
     iconID: 0
     type: 0
+    linkedTile: {fileID: 0}
+  - x: 0
+    y: 0
+    iconID: 0
+    type: 1
+    linkedTile: {fileID: 0}
   - x: 0
     y: 0
     iconID: 0
     type: 0
+    linkedTile: {fileID: 0}
   - x: 0
     y: 0
     iconID: 0
     type: 0
+    linkedTile: {fileID: 0}
+  - x: 0
+    y: 0
+    iconID: 0
+    type: 1
+    linkedTile: {fileID: 0}
   - x: 0
     y: 0
     iconID: 0
     type: 0
+    linkedTile: {fileID: 0}
   - x: 0
     y: 0
     iconID: 0
     type: 0
+    linkedTile: {fileID: 0}
+  - x: 0
+    y: 0
+    iconID: 0
+    type: 1
+    linkedTile: {fileID: 0}
+  - x: 0
+    y: 0
+    iconID: 0
+    type: 1
+    linkedTile: {fileID: 0}
+  - x: 0
+    y: 0
+    iconID: 0
+    type: 1
+    linkedTile: {fileID: 0}
+  - x: 0
+    y: 0
+    iconID: 0
+    type: 1
+    linkedTile: {fileID: 0}
   - x: 0
     y: 0
     iconID: 0
     type: 0
+    linkedTile: {fileID: 0}
   - x: 0
     y: 0
     iconID: 0
     type: 0
+    linkedTile: {fileID: 0}
   - x: 0
     y: 0
     iconID: 0
     type: 0
+    linkedTile: {fileID: 0}
   - x: 0
     y: 0
     iconID: 0
     type: 0
+    linkedTile: {fileID: 0}
   - x: 0
     y: 0
     iconID: 0
     type: 0
+    linkedTile: {fileID: 0}
   - x: 0
     y: 0
     iconID: 0
     type: 0
+    linkedTile: {fileID: 0}
   - x: 0
     y: 0
     iconID: 0
     type: 0
-  - x: 0
-    y: 0
-    iconID: 0
-    type: 0
-  - x: 0
-    y: 0
-    iconID: 0
-    type: 0
-  - x: 0
-    y: 0
-    iconID: 0
-    type: 0
-  - x: 0
-    y: 0
-    iconID: 0
-    type: 0
-  - x: 0
-    y: 0
-    iconID: 0
-    type: 0
-  - x: 0
-    y: 0
-    iconID: 0
-    type: 0
-  - x: 0
-    y: 0
-    iconID: 0
-    type: 0
-  - x: 0
-    y: 0
-    iconID: 0
-    type: 0
-  - x: 0
-    y: 0
-    iconID: 0
-    type: 0
-  - x: 0
-    y: 0
-    iconID: 0
-    type: 0
+    linkedTile: {fileID: 0}
   useTimeLimit: 1
   timeLimit: 60
   maxNormalTypes: 6

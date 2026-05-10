@@ -6,11 +6,23 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using JetBrains.Annotations;
+using Unity.VisualScripting;
+using UnityEngine.SceneManagement;
+using static UIManager;
 
 public class PhotonManager : MonoBehaviourPunCallbacks
 {
-    private static PhotonManager instance;
     public static PhotonManager Instance { get => instance; }
+    private static bool isPlayingOnline = true;
+    public bool IsPlayingOnline { get => isPlayingOnline; set => isPlayingOnline = value; }
+
+    private static PhotonManager instance;
+
+    string keyLevelIdStr = "LevelID";
+
+
+    [SerializeField] public OnlineMatchManager OnlineMatchManager;
     private void Awake()
     {
         if (Instance == null)
@@ -22,8 +34,48 @@ public class PhotonManager : MonoBehaviourPunCallbacks
         {
             Destroy(gameObject);
         }
+       
     }
-    public void GetPhotonToken(string playFabUserId,string displayName)
+
+
+    public override void OnEnable()
+    {
+        base.OnEnable();
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    public override void OnDisable()
+    {
+        base.OnDisable();
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // Log ra để debug xem tên scene thực tế là gì
+        Debug.Log($"Đã load Scene: {scene.name}");
+
+        if (scene.name == SceneType.MATCHINGONLINE.ToString())
+        {
+            // Thử tìm lại
+            OnlineMatchManager = FindObjectOfType<OnlineMatchManager>();
+
+            if (OnlineMatchManager == null)
+            {
+                Debug.LogError("Không tìm thấy OnlineMatchManager trong Scene này!");
+            }
+            else
+            {
+                Debug.Log("Đã tìm thấy OnlineMatchManager thành công.");
+            }
+        }
+    }
+    private void Start()
+    {
+        
+    }
+    public void GetPhotonToken(string playFabUserId, string displayName)
     {
 
         PhotonNetwork.NickName = displayName;
@@ -65,7 +117,7 @@ error =>
     public override void OnJoinedLobby()
     {
         Debug.Log("Đã vào Lobby thành công!");
-      //  UIManager.Instance.ChangeScene(UIManager.SceneType.ONLINEMAINMENU);
+        //  UIManager.Instance.ChangeScene(UIManager.SceneType.ONLINEMAINMENU);
     }
 
     // Nếu không tìm thấy phòng nào (chưa có ai tạo hoặc các phòng đã đầy)
@@ -92,6 +144,11 @@ error =>
         if (PhotonNetwork.IsMasterClient)
         {
             Debug.Log("bạn đã tạo phòng này.");
+
+            //int levelToPlay = 9;
+            //ExitGames.Client.Photon.Hashtable props = new ExitGames.Client.Photon.Hashtable();
+            //props.Add(keyLevelIdStr, levelToPlay);
+            //PhotonNetwork.CurrentRoom.SetCustomProperties(props);
         }
         else
         {
@@ -100,6 +157,18 @@ error =>
 
         // Nếu bạn là người thứ 2 vào phòng, kiểm tra để bắt đầu game
         CheckAndStartGame();
+    }
+
+    public override void OnRoomPropertiesUpdate(ExitGames.Client.Photon.Hashtable propertiesThatChanged)
+    {
+        //   base.OnRoomPropertiesUpdate(propertiesThatChanged);
+
+        if (propertiesThatChanged.ContainsKey(keyLevelIdStr))
+        {
+            int levelId = (int)propertiesThatChanged[keyLevelIdStr];
+
+            LevelManager.OnRequestLoadLevel?.Invoke(levelId);
+        }
     }
 
     // Khi NGƯỜI CHƠI KHÁC vào phòng của bạn
@@ -120,6 +189,20 @@ error =>
             if (PhotonNetwork.CurrentRoom.PlayerCount == 2)
             {
                 Debug.Log("Đã đủ 2 người! Bắt đầu trận đấu...");
+                // 1. Lấy Level từ PlayFab của Master Client để làm level thi đấu
+                int levelToPlay = 4; // Hoặc PlayFabDataManager.Instance.playerData.highestLevel;
+                int randomSeed = UnityEngine.Random.Range(0, 99999);
+
+                // 2. Set vào Custom Properties của Room
+                ExitGames.Client.Photon.Hashtable props = new ExitGames.Client.Photon.Hashtable();
+                props.Add(keyLevelIdStr, levelToPlay);
+                props.Add("LevelSeed", randomSeed);
+                props.Add("MatchStartTime", PhotonNetwork.Time);
+
+                PhotonNetwork.CurrentRoom.SetCustomProperties(props);
+
+                // 3. Chuyển Scene cho cả 2 người
+                PhotonNetwork.AutomaticallySyncScene = true;
                 // Dùng PhotonNetwork.LoadLevel thay vì SceneManager để kéo cả 2 người đi cùng
                 PhotonNetwork.LoadLevel(UIManager.SceneType.MATCHINGONLINE.ToString()); // Thay bằng tên Scene chơi game của bạn
             }
@@ -135,22 +218,18 @@ error =>
         // In ra trạng thái hiện tại để kiểm tra
         Debug.Log("Trạng thái hiện tại: " + PhotonNetwork.NetworkClientState);
         StartCoroutine(WaitForPhotonReady());
-       
+
     }
 
     private IEnumerator WaitForPhotonReady()
     {
-        yield return new WaitUntil(() => PhotonNetwork.IsConnectedAndReady);
-        if (PhotonNetwork.IsConnectedAndReady)
+        while (PhotonNetwork.NetworkClientState != ClientState.JoinedLobby)
         {
-            PhotonNetwork.JoinRandomRoom();
+            yield return null;
         }
-        else
-        {
-            Debug.LogError($"Chưa sẵn sàng! Trạng thái là: {PhotonNetwork.NetworkClientState}");
-        }
-    }
+        PhotonNetwork.JoinRandomRoom();
 
+    }
 
     public void CreateCustomRoom()
     {
@@ -158,7 +237,7 @@ error =>
 
         RoomOptions roomOptions = new RoomOptions();
 
-        Debug.Log("hien thi "+ roomName +" "+roomOptions);
+        Debug.Log("hien thi " + roomName + " " + roomOptions);
         roomOptions.MaxPlayers = 2;
         roomOptions.IsVisible = true;
         roomOptions.IsOpen = true;
@@ -188,17 +267,17 @@ error =>
         }
     }
 
-   /* private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.N) )
-            {
-            Debug.Log("Tổng số phòng: " + cachedRooms.Count);
+    /* private void Update()
+     {
+         if (Input.GetKeyDown(KeyCode.N) )
+             {
+             Debug.Log("Tổng số phòng: " + cachedRooms.Count);
 
-            foreach (var room in cachedRooms.Values)
-            {
-                Debug.Log($"Room: {room.Name} | {room.PlayerCount}/{room.MaxPlayers}");
-            }
-        }
-    }*/
+             foreach (var room in cachedRooms.Values)
+             {
+                 Debug.Log($"Room: {room.Name} | {room.PlayerCount}/{room.MaxPlayers}");
+             }
+         }
+     }*/
 }
 

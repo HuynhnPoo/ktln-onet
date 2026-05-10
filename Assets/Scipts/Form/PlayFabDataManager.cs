@@ -2,6 +2,7 @@
 using PlayFab;
 using PlayFab.ClientModels;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 public enum ItemType
 {
@@ -39,6 +40,14 @@ public class PlayerData
         return inventory.Find(i => i.id == idItem);
     }
 
+
+    // hàm lấy số lượng
+    public int GetItemCount(string idItem) 
+    { 
+        var item = GetItem(idItem);
+        if (item == null) return 0;
+        return item.quantity;
+    }
     public bool HasItem(string idItem)
     {
         return inventory.Exists(i => i.id == idItem);
@@ -46,14 +55,20 @@ public class PlayerData
 
     public void AddItem(string idItem, int amount, ItemType type)
     {
-        var item = GetItem(idItem);
+        // Kiểm tra xem trong túi đồ đã có món này chưa
+        var item = inventory.Find(i => i.id == idItem);
+
         if (item == null)
         {
+            // Nếu chưa có thì mới thêm mới vào List
             inventory.Add(new InventoryItem { id = idItem, quantity = amount, type = type });
+            Debug.Log("Thêm mới item vào inventory");
         }
         else
         {
+            // Nếu có rồi thì chỉ CỘNG DỒN số lượng (quantity)
             item.quantity += amount;
+            Debug.Log("Cộng dồn số lượng cho item đã có");
         }
     }
 
@@ -126,6 +141,7 @@ public class PlayerData
         }
     }
 }
+
     public class PlayFabDataManager : SingletonBase<PlayFabDataManager>
     {
 
@@ -147,6 +163,9 @@ public class PlayerData
                     // 🔥 Fix data lỗi / thiếu
                     playerData.ValidateData();
 
+                   GameManager.Instance.TotalCoinOnline = playerData.gold;
+                    Debug.Log("vàng là"+ playerData.gold);
+                   GameManager.Instance.HighScoreOnline = playerData.score;
                     Debug.Log("Load data thành công");
                 }
                 else
@@ -157,7 +176,7 @@ public class PlayerData
                     playerData = CreateDefaultData();
 
                     // 🔥 GẮN DATA VÀO ACCOUNT
-                    SavePlayerData();
+                   // SavePlayerData();
                 }
 
                 onDone?.Invoke();
@@ -204,4 +223,6 @@ public class PlayerData
         }
             };
         }
-    }
+
+   
+}

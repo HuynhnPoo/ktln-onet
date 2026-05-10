@@ -135,6 +135,22 @@ MonoBehaviour:
     m_Key: Coin_Txt
     m_Metadata:
       m_Items: []
+  - m_Id: 10120462921900032
+    m_Key: ConfirmNameForm_Txt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10120605830225920
+    m_Key: YourNameForm_Txt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14485360225296384
+    m_Key: BuyItemShop_Btn
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14485477661614080
+    m_Key: UseItemShop_Btn
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

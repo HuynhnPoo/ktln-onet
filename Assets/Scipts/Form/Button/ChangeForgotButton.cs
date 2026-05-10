@@ -10,6 +10,7 @@ public class ChangeForgotButton : ButtonBase
     {
         if (!hasForgot) // tắt ui form login để bật form forgots
         {
+            UIManager.Instance.TitlleFormGame = StringManager.titlleForgot;
             UIManager.Instance.uiFormCanvas.transform.GetChild(0).GetChild(0).gameObject.SetActive(false);
             UIManager.Instance.uiFormCanvas.transform.GetChild(0).GetChild(1).gameObject.SetActive(true);
             hasForgot=true;

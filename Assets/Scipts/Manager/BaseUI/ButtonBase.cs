@@ -13,9 +13,6 @@ public abstract class ButtonBase : MonoBehaviour
             this.button = GetComponent<Button>();
     }
 
-    protected virtual void Awake()
-    {
-    }
     protected virtual void OnEnable()
     {
         this.LoadCompoment();
@@ -29,7 +26,6 @@ public abstract class ButtonBase : MonoBehaviour
     }
     public virtual void AddEventListener()
     {
-
         this.button.onClick.AddListener(this.OnClick);
     }
     public abstract void OnClick();
