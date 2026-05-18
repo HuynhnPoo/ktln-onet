@@ -18,6 +18,7 @@ public class NextLevelBtn : ButtonBase
                 // Cập nhật lên PlayFab
                 GameMechanics.UpdateHighestLevel(PlayFabDataManager.Instance.playerData, nextLevel);
                 PlayFabDataManager.Instance.SavePlayerData();
+                PlayFabDataManager.Instance.SaveLeaderboard();
             }
 
             // Tắt UI Win/Lose của Online (Kiểm tra lại GetChild của bạn)

@@ -24,7 +24,9 @@ public class TTTTTTTTTTT : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.S))
         {
-
+            Debug.Log("thuwck hien thông số");
+        //    PlayFabDataManager.Instance.SaveLeaderboard();
+           
         }
 
     }

@@ -18,6 +18,9 @@ EditorBuildSettings:
     path: Assets/Scenes/LEVELMANAGER.unity
     guid: cb5144e0a70568544a9e3b2a231b7424
   - enabled: 1
+    path: Assets/Scenes/Online/LEVELONLINEMANAGER.unity
+    guid: 65e37dbf1eaaf514b9da26982aba7eb3
+  - enabled: 1
     path: Assets/Scenes/Online/MATCHINGONLINE.unity
     guid: 34c13bb5866e53a4887654fed2f45088
   - enabled: 1

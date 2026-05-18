@@ -65,5 +65,22 @@ public class ControlTile : MonoBehaviour
     {
         Destroy(this.gameObject);
     }
-  
+
+    // Hàm bảo VisualTile bật nhấp nháy
+    public void ActiveHint()
+    {
+        if (tile != null)
+        {
+            tile.PlayHintAnimation();
+        }
+    }
+
+    // Hàm bảo VisualTile tắt nhấp nháy
+    public void DeactiveHint()
+    {
+        if (tile != null)
+        {
+            tile.StopHintAnimation();
+        }
+    }
 }

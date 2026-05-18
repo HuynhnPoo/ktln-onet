@@ -11,7 +11,7 @@ public class NewPlayOnlineButton : ButtonBase
         // Tìm button nếu chưa kéo vào Inspector
         if (menuLevelButton == null)
         {
-            menuLevelButton = UIManager.Instance.uiCenterMainMenuOnlineCanvas.transform.GetChild(1).GetChild(0).GetChild(1).gameObject;
+            menuLevelButton = UIManager.Instance.uiCenterMainMenuOnlineCanvas.transform.GetChild(3).GetChild(0).GetChild(1).gameObject;
         }
 
         Debug.Log(PlayFabDataManager.Instance.playerData.highestLevel);

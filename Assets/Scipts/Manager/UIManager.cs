@@ -74,6 +74,7 @@ public class UIManager : SingletonBase<UIManager>
 
         MAINMENU,
         LEVELMANAGER,
+        LEVELONLINEMANAGER,
         ONLINEMAINMENU,
         MATCHINGONLINE,
         FORM,

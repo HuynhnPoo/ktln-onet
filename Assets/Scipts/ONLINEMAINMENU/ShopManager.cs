@@ -76,6 +76,7 @@ public class ShopManager : SingletonBase<ShopManager>
         }
     }
 
+   
     //// --- PLAYFAB CLOUD SYNC ---
 
     //public void SaveDataToPlayFab()

@@ -267,17 +267,13 @@ error =>
         }
     }
 
-    /* private void Update()
-     {
-         if (Input.GetKeyDown(KeyCode.N) )
-             {
-             Debug.Log("Tổng số phòng: " + cachedRooms.Count);
-
-             foreach (var room in cachedRooms.Values)
-             {
-                 Debug.Log($"Room: {room.Name} | {room.PlayerCount}/{room.MaxPlayers}");
-             }
-         }
-     }*/
+    public override void OnPlayerLeftRoom(Player otherPlayer)
+    {
+        Debug.Log("user rơi phong là" + otherPlayer);
+        if(isPlayingOnline)
+        {
+            OnlineMatchManager.photonView.RPC("RPC_OnPlayerForfeit", RpcTarget.All,otherPlayer.ActorNumber);
+        }
+    }
 }
 

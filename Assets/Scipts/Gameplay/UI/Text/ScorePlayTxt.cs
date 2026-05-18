@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,16 +8,24 @@ public class ScorePlayTxt : TextBase
     protected override void PrintText()
     {
 
-
         if (!isHighScore)
             text.SetText(GameManager.Instance.Score.ToString("D4"));
 
-        else {
-            if (GameManager.Instance.IsOnlineMode) text.SetText(GameManager.Instance.HighScoreOnline.ToString("D4"));
-            else  text.SetText(GameManager.Instance.HighScore.ToString("D4"));
-        
+        else
+        {
+            if (PlayFabDataManager.Instance.playerData.playerName != "")
+            {
+                Debug.Log("thư hien cho online" + PlayFabDataManager.Instance.playerData.playerName);
+                text.SetText(GameManager.Instance.HighScoreOnline.ToString("D4"));
+            }
+            else
+            {
+                Debug.Log("thư hien cho "+ isHighScore);
+                text.SetText(GameManager.Instance.HighScore.ToString("D4"));
+            }
+
         }
     }
 
-   
+
 }

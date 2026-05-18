@@ -135,6 +135,10 @@ namespace PlayFab.PfEditor
 
         public static void SharedErrorCallback(string error)
         {
+            if (error.Contains("Cannot connect to destination host"))
+            {
+                return;
+            }
             PlayFabEditor.RaiseStateUpdate(PlayFabEditor.EdExStates.OnError, "SharedErrorCallback" + error);
         }
 

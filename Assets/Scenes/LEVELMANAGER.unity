@@ -744,6 +744,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentLevel: 10
+  typeGame: 1
 --- !u!114 &218639804
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -863,9 +864,9 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 39.812134, y: -4.2113}
+  m_AnchoredPosition: {x: 39.812183, y: 423.5775}
   m_SizeDelta: {x: 1239.9623, y: 855.5776}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &227722253
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -879,7 +880,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Content: {fileID: 1435707747}
-  m_Horizontal: 1
+  m_Horizontal: 0
   m_Vertical: 1
   m_MovementType: 1
   m_Elasticity: 0.1
@@ -1062,6 +1063,43 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
+--- !u!1 &286579553
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 286579554}
+  m_Layer: 5
+  m_Name: right
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &286579554
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 286579553}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 632875142}
+  - {fileID: 1195656521}
+  m_Father: {fileID: 2005379007}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 1, y: 1}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: -1125, y: -50}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &404210518
 GameObject:
   m_ObjectHideFlags: 0
@@ -1416,6 +1454,7 @@ GameObject:
   - component: {fileID: 467363893}
   - component: {fileID: 467363892}
   - component: {fileID: 467363891}
+  - component: {fileID: 467363895}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -1508,6 +1547,24 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &467363895
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 467363890}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a22281ad22fd53848b49e4750d9b8e44, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneType: 1
+  transformUI:
+  - {fileID: 227722252}
+  - {fileID: 2007986048}
+  - {fileID: 286579554}
+  canvasRect: {fileID: 467363894}
 --- !u!1 &472279633
 GameObject:
   m_ObjectHideFlags: 0
@@ -1561,6 +1618,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentLevel: 8
+  typeGame: 1
 --- !u!114 &472279636
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1987,6 +2045,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentLevel: 0
+  typeGame: 1
 --- !u!1 &526023273
 GameObject:
   m_ObjectHideFlags: 0
@@ -2325,6 +2384,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentLevel: 13
+  typeGame: 1
 --- !u!114 &579310532
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2742,18 +2802,18 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 632875141}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1330486581}
   - {fileID: 526023274}
-  m_Father: {fileID: 2005379007}
+  m_Father: {fileID: 286579554}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -191, y: -286}
+  m_AnchoredPosition: {x: 884, y: -286}
   m_SizeDelta: {x: 304.37488, y: 179.9211}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &632875143
@@ -3421,6 +3481,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentLevel: 18
+  typeGame: 1
 --- !u!114 &779803838
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3556,6 +3617,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentLevel: 9
+  typeGame: 1
 --- !u!114 &798665939
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3825,6 +3887,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentLevel: 2
+  typeGame: 1
 --- !u!114 &845589310
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3960,6 +4023,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentLevel: 5
+  typeGame: 1
 --- !u!114 &864024649
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4095,6 +4159,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentLevel: 16
+  typeGame: 1
 --- !u!114 &892138886
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4406,6 +4471,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentLevel: 11
+  typeGame: 1
 --- !u!114 &996447390
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4825,6 +4891,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentLevel: 15
+  typeGame: 1
 --- !u!114 &1032333839
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4996,6 +5063,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentLevel: 4
+  typeGame: 1
 --- !u!114 &1077062800
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5333,6 +5401,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentLevel: 19
+  typeGame: 1
 --- !u!114 &1155789409
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5442,16 +5511,16 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1195656520}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 2005379007}
+  m_Father: {fileID: 286579554}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 1004.06696, y: -55.916412}
+  m_AnchoredPosition: {x: 1003.89233, y: -55.916412}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1195656522
@@ -5602,6 +5671,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentLevel: 17
+  typeGame: 1
 --- !u!114 &1205522526
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6922,6 +6992,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentLevel: 3
+  typeGame: 1
 --- !u!114 &1441323464
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7115,8 +7186,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 154.16888, y: -173.2708}
-  m_SizeDelta: {x: -356.9623, y: -283.404}
+  m_AnchoredPosition: {x: 154.16888, y: -217.04138}
+  m_SizeDelta: {x: -356.9623, y: -327.1713}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1467119321
 MonoBehaviour:
@@ -8045,6 +8116,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentLevel: 12
+  typeGame: 1
 --- !u!114 &1674902985
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8448,6 +8520,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentLevel: 1
+  typeGame: 1
 --- !u!114 &1978002209
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8559,8 +8632,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2007986048}
-  - {fileID: 632875142}
-  - {fileID: 1195656521}
+  - {fileID: 286579554}
   m_Father: {fileID: 467363894}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
@@ -8701,6 +8773,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 247b5ba191c069c45b43e8866a93efce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  typeQuit: 0
 --- !u!1 &2014273122
 GameObject:
   m_ObjectHideFlags: 0
@@ -8790,6 +8863,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentLevel: 14
+  typeGame: 1
 --- !u!114 &2033941863
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9195,6 +9269,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentLevel: 6
+  typeGame: 1
 --- !u!114 &2142703261
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9330,6 +9405,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentLevel: 7
+  typeGame: 1
 --- !u!114 &2144080452
 MonoBehaviour:
   m_ObjectHideFlags: 0

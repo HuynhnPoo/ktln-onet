@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DG.Tweening;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -102,19 +103,24 @@ public class GameManager : SingletonBase<GameManager>
 
     void PauseGame(bool paused, GameObject pausePanel)
     {
+        RectTransform rect= pausePanel.GetComponent<RectTransform>();
         if (!paused)  // kiểm tra xem nêu chưa pause thi thực hiện pause
         {
             Time.timeScale = 0f;
             pausePanel.SetActive(true);
-
+            rect.ShowPopup(1);
             isPaused = true;
         }
         else
         {
-            Time.timeScale = 1f;
-            pausePanel.SetActive(false);
+            rect.HidePopup(1).OnComplete(() =>
+            {
+                Time.timeScale = 1f;
+                pausePanel.SetActive(false);
 
-            isPaused = false;
+                isPaused = false;
+            });
+           
         }
     }
     public void GameOver()
@@ -124,6 +130,8 @@ public class GameManager : SingletonBase<GameManager>
         if (IsOnlineMode)
         {
             PlayFabDataManager.Instance.SavePlayerData();
+            PlayFabDataManager.Instance.SaveLeaderboard();
+
             GameObject obj = UIManager.Instance.uiOnlinePlayGameCanvas.transform.GetChild(2).GetChild(1).gameObject;// panel game oveer được bật
             GameObject nextLevelButton = obj.transform.GetChild(0).GetChild(2).gameObject;
             obj.SetActive(true);
@@ -153,6 +161,7 @@ public class GameManager : SingletonBase<GameManager>
         if (IsOnlineMode)
         {
             PlayFabDataManager.Instance.SavePlayerData();
+            PlayFabDataManager.Instance.SaveLeaderboard();
             if (PlayFabDataManager.Instance.playerData.highestLevel == CurrentLevel)
             {
                 PlayFabDataManager.Instance.playerData.highestLevel += 1;

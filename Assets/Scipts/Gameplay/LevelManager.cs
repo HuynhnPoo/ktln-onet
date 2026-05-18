@@ -59,7 +59,7 @@ public class LevelManager : MonoBehaviour, ICompoment
 
         Debug.Log(levelToLoad);
 
-        LoadCurrentLevel(10); // nhớ set id trong SO
+        LoadCurrentLevel(3); // nhớ set id trong SO
     }
 
     private void CheckForRoomLevel()

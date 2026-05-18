@@ -1251,6 +1251,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 247b5ba191c069c45b43e8866a93efce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  typeQuit: 1
 --- !u!1 &323570228
 GameObject:
   m_ObjectHideFlags: 0
@@ -2630,6 +2631,7 @@ GameObject:
   - component: {fileID: 837517079}
   - component: {fileID: 837517078}
   - component: {fileID: 837517082}
+  - component: {fileID: 837517083}
   m_Layer: 5
   m_Name: Canvas_Font_Forms
   m_TagString: Untagged
@@ -2740,6 +2742,24 @@ MonoBehaviour:
   currentPassword: {fileID: 0}
   currentName: {fileID: 0}
   confirmPass: {fileID: 0}
+--- !u!114 &837517083
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 837517077}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a22281ad22fd53848b49e4750d9b8e44, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneType: 5
+  transformUI:
+  - {fileID: 1105836938}
+  - {fileID: 311849920}
+  - {fileID: 1878152531}
+  canvasRect: {fileID: 837517081}
 --- !u!1 &837827079
 GameObject:
   m_ObjectHideFlags: 0
@@ -3517,7 +3537,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -6.2894287}
+  m_AnchoredPosition: {x: 0, y: -6.289398}
   m_SizeDelta: {x: -669.2345, y: -99.8433}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1105836939

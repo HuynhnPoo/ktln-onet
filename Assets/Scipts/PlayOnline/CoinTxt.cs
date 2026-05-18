@@ -4,10 +4,20 @@ using UnityEngine;
 
 public class CoinTxt : TextBase
 {
+    public bool isTotalCoin;
     protected override void PrintText()
     {
-        text.SetText(GameManager.Instance.TotalCoinOnline.ToString());
+        if (isTotalCoin)
+        {
+
+            text.SetText(GameManager.Instance.TotalCoinOnline.ToString());
+        }
+        else
+        {
+            text.SetText(GameManager.Instance.Coin.ToString());
+
+        }
     }
 
-   
+
 }

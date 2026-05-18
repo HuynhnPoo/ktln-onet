@@ -13,9 +13,10 @@ public class GridManager : MonoBehaviour
     public int Height { set => height = value; get => height; }
 
     [SerializeField] private GameObject tilePrefabs;
-    [SerializeField] private TileData tileData;
-    public Board Board { get; set; }
+    [SerializeField] private TileData tileData; //lưu chữ các dữ của tile từ SO
     private ControlTile[,] allTiles;
+    public TileData TileData => tileData;
+    public Board Board { get; set; }
 
     public LevelManager LevelManagerGame { private set; get; }
     public LevelData levelData { get; set; }
@@ -209,7 +210,7 @@ public class GridManager : MonoBehaviour
         }
     }
 
-    public void SelectTile(int x, int y)
+    public void SelectTile(int x, int y) // kiểm tra chọn 2 tile
     {
         if (PhotonNetwork.InRoom && !GameManager.Instance.CanIPlay())
         {
@@ -245,6 +246,13 @@ public class GridManager : MonoBehaviour
                     // Gửi RPC tới TẤT CẢ người chơi (kể cả chính mình)
                     OnlineMatchManager.OnMatchFound?.Invoke(gridPath);
                 }
+                else if (PlayFabDataManager.Instance.playerData.playerName != "" && GameManager.Instance.IsOnlineMode)
+                {
+                  //  Debug.Log(PlayFabDataManager.Instance.playerData);
+                    HandleMatch(gridPath); // thuc hien  ket noi
+                    GameMechanics.AddReward(PlayFabDataManager.Instance.playerData, 10, GameManager.Instance.AmountScore);// cộng thêm 10 vàng
+
+                }
                 else
                 {
                     HandleMatch(gridPath);
@@ -252,11 +260,6 @@ public class GridManager : MonoBehaviour
                 }
 
 
-                if (PlayFabDataManager.Instance.playerData != null) // chỉ thực hiện khi online được đnăg nhập
-                {
-                    GameMechanics.AddReward(PlayFabDataManager.Instance.playerData, 10, GameManager.Instance.AmountScore);// cộng thêm 10 vàng
-
-                }
                 Debug.Log("hai tile có thể connect được với nhau");
 
             }
@@ -269,9 +272,9 @@ public class GridManager : MonoBehaviour
 
     }
 
-    public void HandleMatch(List<Vector2Int> gridPath)
+    public void HandleMatch(List<Vector2Int> gridPath) // hàm sử lí match
     {
-      
+
         // Chuyển tọa độ Grid sang World để vẽ Line
         Vector3[] worldPoints = new Vector3[gridPath.Count];
         //Vector3 centerOffset = Board.GetCenterOffset();
@@ -286,7 +289,6 @@ public class GridManager : MonoBehaviour
         Vector2Int p1 = gridPath[0];
         Vector2Int p2 = gridPath[gridPath.Count - 1];
 
-        // Debug.Log(p1.x+ p1.y +"--"+p2.x+ p2.y);
         Board.SetCellEmpty(p1.x, p1.y);
         Board.SetCellEmpty(p2.x, p2.y);
 
@@ -335,5 +337,20 @@ public class GridManager : MonoBehaviour
         // allTiles = newLayout;
     }
 
-    
+
+    public void HighlightTwoCells(GridCell cellA, GridCell cellB)
+    {
+        if (cellA == null || cellB == null) return;
+
+        // Truy cập thông qua cầu nối linkedTile
+        if (cellA.linkedTile != null)
+        {
+            cellA.linkedTile.ActiveHint();
+        }
+
+        if (cellB.linkedTile != null)
+        {
+            cellB.linkedTile.ActiveHint();
+        }
+    }
 }

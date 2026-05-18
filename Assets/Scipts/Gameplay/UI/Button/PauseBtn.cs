@@ -7,14 +7,11 @@ public class PauseBtn : ButtonBase
 {
     public override void OnClick()
     {
-        if (PhotonNetwork.InRoom) 
-        {
-
-        }
-
         if (GameManager.Instance.IsOnlineMode)
         {
             PlayFabDataManager.Instance.SavePlayerData();
+            PlayFabDataManager.Instance.SaveLeaderboard();
+
             GameManager.Instance.Pausing(GameManager.Instance.IsPaused);
         }
         else

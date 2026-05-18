@@ -1,4 +1,5 @@
-﻿using Photon.Pun;
+﻿using DG.Tweening;
+using Photon.Pun;
 using Photon.Realtime;
 using PlayFab;
 using PlayFab.ClientModels;
@@ -95,13 +96,17 @@ public class FormHander : MonoBehaviour
 
 
             playFabUserId = result.PlayFabId;
-            PlayFabDataManager.Instance.LoadPlayerData();
+
+            PlayFabDataManager.Instance.LoadPlayerData(() =>// load save dữ liệu cho leadeboard
+            {
+                PlayFabDataManager.Instance.SaveLeaderboard();
+            });
+
             UIManager.Instance.KeyNotificationTxt = StringManager.notiLoginSuccess;
 
             StartCoroutine(DisplayNotiCouroutine(1));
 
-            CheckHasNameDisplay();
-
+            CheckHasNameDisplay(); // kiểm tra có tên trong chưa?
         }
     }
 
@@ -144,7 +149,7 @@ public class FormHander : MonoBehaviour
                 UIManager.Instance.DisplayNameUI = displayName;
 
                 UIManager.Instance.ChangeScene(UIManager.SceneType.ONLINEMAINMENU);
-                Debug.Log(UIManager.Instance.DisplayNameUI);
+              //  Debug.Log(UIManager.Instance.DisplayNameUI);
             }
 
             PhotonManager.Instance.GetPhotonToken(playFabUserId, displayName);
@@ -192,7 +197,11 @@ public class FormHander : MonoBehaviour
         if (result != null)
         {
             UIManager.Instance.KeyNotificationTxt = StringManager.notiRegisterSuccess;
-            PlayFabDataManager.Instance.LoadPlayerData();
+           
+            PlayFabDataManager.Instance.LoadPlayerData(() =>
+            {
+                PlayFabDataManager.Instance.SaveLeaderboard();
+            });
 
             UIManager.Instance.IsLogin = true; // dăng kí thành công trở về màn hình login
             UIManager.Instance.uiFormCanvas.transform.GetChild(0).GetChild(0).GetChild(2).gameObject.SetActive(false);
@@ -229,13 +238,30 @@ public class FormHander : MonoBehaviour
     IEnumerator DisplayNotiCouroutine(int time)
     {
         Debug.Log("thực hiên notti");
-        //  Debug.Log("thuc hien bat");
         // Debug.Log(UIManager.Instance.uiFormCanvas.transform.GetChild(1).name);
-        UIManager.Instance.uiFormCanvas.transform.GetChild(2).GetChild(0).gameObject.SetActive(true);
+        // RectTransform rectTransform = 
+        //  RectTransform canvasRect = UIManager.Instance.uiCenterMainMenuCanvas.transform.parent.GetComponent<RectTransform>();
 
+        // 1. Lấy tham chiếu
+        GameObject notiObject = UIManager.Instance.uiFormCanvas.transform.GetChild(2).GetChild(0).gameObject;
+        RectTransform rectTransform = notiObject.GetComponent<RectTransform>();
+        RectTransform canvasRect = UIManager.Instance.uiFormCanvas.transform.GetComponent<RectTransform>();
+
+        // 2. Tính toán vị trí
+        float exitY = canvasRect.rect.height + rectTransform.rect.height;
+        Vector2 hidePos = new Vector2(0, exitY);
+        Vector2 showPos = Vector2.zero;
+
+
+        // 3. THỰC HIỆN HIỆN PANEL (Dùng MoveUI)
+        notiObject.SetActive(true);
+        rectTransform.anchoredPosition = showPos; // Đảm bảo vị trí đích là (0,0)
+        rectTransform.MoveUI(hidePos, 0.5f, Ease.OutBack);
         yield return new WaitForSeconds(time);
         // Debug.Log("thuwc hien tawt");
-        UIManager.Instance.uiFormCanvas.transform.GetChild(2).GetChild(0).gameObject.SetActive(false);
+        //UIManager.Instance.uiFormCanvas.transform.GetChild(2).GetChild(0).gameObject.SetActive(false);
+        notiObject.SetActive(false);
+
     }
 
 

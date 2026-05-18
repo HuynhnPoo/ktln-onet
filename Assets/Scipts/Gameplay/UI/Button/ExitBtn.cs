@@ -11,6 +11,7 @@ public class ExitBtn : ButtonBase
         if (GameManager.Instance.IsOnlineMode && PlayFabDataManager.Instance.playerData != null)
         {
             PlayFabDataManager.Instance.SavePlayerData();
+            PlayFabDataManager.Instance.SaveLeaderboard();
         }
 
         UIManager.SceneType sceneType = GameManager.Instance.IsOnlineMode ?

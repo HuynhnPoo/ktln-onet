@@ -8,6 +8,7 @@ public class QuantilyItemTxt : TextBase
 
     protected override void PrintText()
     {
-       PlayFabDataManager.Instance.playerData.GetItemCount(nameItemBoost);
+       
+        text.SetText(PlayFabDataManager.Instance.playerData.GetItemCount(nameItemBoost).ToString());
     }
 }

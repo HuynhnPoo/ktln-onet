@@ -4,10 +4,20 @@ using UnityEngine;
 
 public class ResumeGameBtn : ButtonBase
 {
+    public QuitType typeGame;
     public override void OnClick()
     {
-        UIManager.Instance.ChangeScene(UIManager.SceneType.LEVELMANAGER);
+        switch (typeGame)
+        {
+            case QuitType.MenuMainOff:
+                UIManager.Instance.ChangeScene(UIManager.SceneType.LEVELMANAGER);
+                break;
+            case QuitType.MenuMainOn:
+                UIManager.Instance.ChangeScene(UIManager.SceneType.LEVELONLINEMANAGER);
+                break;
+
+        }
     }
 
-   
+
 }

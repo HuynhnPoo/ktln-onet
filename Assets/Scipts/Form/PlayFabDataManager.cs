@@ -42,8 +42,8 @@ public class PlayerData
 
 
     // hàm lấy số lượng
-    public int GetItemCount(string idItem) 
-    { 
+    public int GetItemCount(string idItem)
+    {
         var item = GetItem(idItem);
         if (item == null) return 0;
         return item.quantity;
@@ -142,15 +142,22 @@ public class PlayerData
     }
 }
 
-    public class PlayFabDataManager : SingletonBase<PlayFabDataManager>
-    {
+public class PlayFabDataManager : SingletonBase<PlayFabDataManager>
+{
 
-        public PlayerData playerData;
+    public PlayerData playerData;
 
+    int valueMax = 999999;
 
     // ================= LOAD =================
     public void LoadPlayerData(System.Action onDone = null)
     {
+        if (Application.internetReachability == NetworkReachability.NotReachable)
+        {
+            Debug.LogWarning("Không có kết nối mạng. Bỏ qua LoadPlayerData.");
+            onDone?.Invoke();
+            return;
+        }
         PlayFabClientAPI.GetUserData(new GetUserDataRequest(),
             result =>
             {
@@ -163,9 +170,9 @@ public class PlayerData
                     // 🔥 Fix data lỗi / thiếu
                     playerData.ValidateData();
 
-                   GameManager.Instance.TotalCoinOnline = playerData.gold;
-                    Debug.Log("vàng là"+ playerData.gold);
-                   GameManager.Instance.HighScoreOnline = playerData.score;
+                    GameManager.Instance.TotalCoinOnline = playerData.gold;
+                    Debug.Log("vàng là" + playerData.gold);
+                    GameManager.Instance.HighScoreOnline = playerData.score;
                     Debug.Log("Load data thành công");
                 }
                 else
@@ -176,7 +183,7 @@ public class PlayerData
                     playerData = CreateDefaultData();
 
                     // 🔥 GẮN DATA VÀO ACCOUNT
-                   // SavePlayerData();
+                     SavePlayerData();
                 }
 
                 onDone?.Invoke();
@@ -187,42 +194,99 @@ public class PlayerData
 
     // ================= SAVE =================
     public void SavePlayerData()
-        {
-            string json = JsonUtility.ToJson(playerData);
+    {
 
-            var request = new UpdateUserDataRequest()
-            {
-                Data = new Dictionary<string, string>()
+        if (playerData == null)
+        {
+            Debug.LogError("PlayerData NULL");
+            return;
+        }
+
+        // Validate data trước khi save
+        playerData.ValidateData();
+
+        // Clamp dữ liệu
+        playerData.gold = Mathf.Clamp(playerData.gold, 0, valueMax);
+        playerData.score = Mathf.Clamp(playerData.score, 0, valueMax);
+
+        string json = JsonUtility.ToJson(playerData);
+
+        var request = new UpdateUserDataRequest()
+        {
+            Data = new Dictionary<string, string>()
             {
                 { "PlayerData", json }
             }
-            };
+        };
 
-            PlayFabClientAPI.UpdateUserData(request,
-                result => Debug.Log("Save thành công"),
-                error => Debug.LogError(error.GenerateErrorReport()));
-        }
+        PlayFabClientAPI.UpdateUserData(request,
+            result => Debug.Log("Save thành công"),
+            error => Debug.LogError(error.GenerateErrorReport()));
+    }
 
-        // ================= DEFAULT =================
-        PlayerData CreateDefaultData()
+    // ================= DEFAULT =================
+    PlayerData CreateDefaultData() // khơi tạo dữ liệu khoi mới đầu cho nhân vật bắt đàu chơi
+    {
+        return new PlayerData()
         {
-            return new PlayerData()
-            {
-                playerName = "",
-                gold = 100,
-                score = 0,
-                highestLevel = 1,
+            playerName = "",
+            gold = 100,
+            score = 0,
+            highestLevel = 0,
 
-                currentTileId = "tile_default",
-                currentLineId = "line_default",
+            currentTileId = "tile_default",
+            currentLineId = "line_default",
 
-                inventory = new List<InventoryItem>()
+            inventory = new List<InventoryItem>()
         {
             new InventoryItem { id = "tile_default", quantity = 1,type=ItemType.Skin },
             new InventoryItem { id = "line_default", quantity = 1, type =ItemType.Skin }
         }
-            };
+        };
+    }
+
+
+
+    //
+    public void SaveLeaderboard()
+    {
+
+        if (playerData == null)
+        {
+            Debug.LogError("playerData NULL");
+            return;
         }
 
-   
+        UpdatePlayerStatisticsRequest request =
+            new UpdatePlayerStatisticsRequest
+            {
+                Statistics = new List<StatisticUpdate>
+                {
+                new StatisticUpdate
+                {
+                    StatisticName = "Score",
+                    //Value = GameManager.Instance.HighScoreOnline
+                    Value = playerData.score
+                },
+
+                new StatisticUpdate
+                {
+                    StatisticName = "High_Level",
+                    Value = playerData.highestLevel
+                }
+                }
+            };
+
+        PlayFabClientAPI.UpdatePlayerStatistics(
+            request,
+            result =>
+            {
+                Debug.Log("SAVE LEADERBOARD SUCCESS");
+            },
+            error =>
+            {
+                Debug.LogError(error.GenerateErrorReport());
+            });
+    }
+ 
 }

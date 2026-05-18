@@ -30,6 +30,13 @@ public static class GameMechanics
         GameManager.Instance.Score = currentScore;
     }
 
+    public static void AddTime(int amount)
+    {
+        if (timeUp) return;
+
+        currentTime += amount;
+    }
+
     public static float CountDown()
     {
         if (!timeUp)
@@ -42,11 +49,14 @@ public static class GameMechanics
                 currentTime = 0;
 
                 Debug.Log("het gio");
+                GameManager.Instance.GameOver();
 
             }
         }
         return currentTime;
     }
+
+    public static float GetMaxTime() => maxTime;
 
     public static float GetTimeRatio() => currentTime / maxTime;
 
@@ -204,11 +214,13 @@ public static class GameMechanics
         Debug.Log("thực hiện add scpre và coin" + GameManager.Instance.Coin);
 
         GameManager.Instance.Score += scoreAmount;
-        if(GameManager.Instance.Score > GameManager.Instance.HighScoreOnline)
+        if (GameManager.Instance.Score > GameManager.Instance.HighScoreOnline)
 
-        playerData.score += GameManager.Instance.Score;
-        GameManager.Instance.HighScoreOnline =playerData.score;
+            playerData.score += GameManager.Instance.Score;
+        GameManager.Instance.HighScoreOnline = playerData.score;
+
         PlayFabDataManager.Instance.SavePlayerData();
+        PlayFabDataManager.Instance.SaveLeaderboard();
     }
 
     // update điềm số  khi online
@@ -219,7 +231,9 @@ public static class GameMechanics
         if (level > playerData.highestLevel)
         {
             playerData.highestLevel = level;
+
             PlayFabDataManager.Instance.SavePlayerData();
+            PlayFabDataManager.Instance.SaveLeaderboard();
         }
     }
 
@@ -246,7 +260,7 @@ public static class GameMechanics
                 MoveCenterCollapse(board, gridCell);
                 break;
             case BoardGravityType.SplitOutward:
-               MoveSplitOutward (board, gridCell);
+                MoveSplitOutward(board, gridCell);
                 break;
         }
     }
@@ -351,7 +365,7 @@ public static class GameMechanics
         Debug.Log($"<color=green>✓ MoveHorizontal hoàn thành. Tổng di chuyển: {moveCount} tiles</color>");
     }
 
-    //
+    //  --- LOGIC DI CHUYỂN VÀO TRUNG TÂM ---
     private static void MoveCenterCollapse(Board board, GridCell[,] grid)
     {
         int width = board.Width;
@@ -449,8 +463,8 @@ public static class GameMechanics
 
         Debug.Log($"<color=green>✓ Center Collapse hoàn thành. Tổng di chuyển: {moveCount} tiles</color>");
     }
-    
 
+    // --- LOGGIC DI CHUYEN RA NGOÀI RÌA ---
     private static void MoveSplitOutward(Board board, GridCell[,] grid)
     {
         int width = board.Width;
@@ -514,5 +528,62 @@ public static class GameMechanics
         Debug.Log($"<color=green>✓ MoveSplitOutward hoàn thành. Tổng di chuyển: {moveCount} tiles</color>");
     }
 
-  
+
+    private static List<GridCell> GetAllActiveCells(Board board, int width, int height)
+    {
+        List<GridCell> gridCells = new List<GridCell>();
+        for (int x = 0; x < width; x++)
+        {
+
+            for (int y = 0; y < height; y++)
+            {
+                GridCell cell = board.GetCell(x, y);
+                if (cell != null && !cell.IsEmpty && cell.linkedTile != null)
+                {
+                    gridCells.Add(cell);
+                }
+            }
+        }
+        return gridCells;
+    }
+    public static List<Vector2Int> FindPossibleMatch(Board board, int width, int height)
+    {
+        for (int x1 = 0; x1 < width; x1++)
+        {
+            for (int y1 = 0; y1 < height; y1++)
+            {
+                // 1. Bỏ qua nếu ô bắt đầu trống (đã bị xóa trước đó)
+                if (board.IsEmpty(x1, y1)) continue;
+
+                for (int x2 = 0; x2 < width; x2++)
+                {
+                    for (int y2 = 0; y2 < height; y2++)
+                    {
+                        // 2. CHÍNH LÀ ĐÂY: Nếu trùng tọa độ thì KHÔNG ĐƯỢC nối, bỏ qua ngay!
+                        if (x1 == x2 && y1 == y2) continue;
+
+                        // 3. Bỏ qua nếu ô kết thúc trống
+                        if (board.IsEmpty(x2, y2)) continue;
+
+                        // 4. Kiểm tra hai ô phải cùng loại (cùng ID/Cùng hình ảnh)
+                        if (board.GetCell(x1,y1).iconID == board.GetCell(x2,y2).iconID)
+                        {
+                            Vector2Int p1 = new Vector2Int(x1, y1);
+                            Vector2Int p2 = new Vector2Int(x2, y2);
+
+                            // 5. Tìm đường đi giữa 2 ô khác nhau này
+                            List<Vector2Int> path = GetPath(p1, p2, board);
+
+                            if (path != null && path.Count >= 2)
+                            {
+                                // Tìm thấy 1 cặp hợp lệ thì trả về ngay cho Bot ăn
+                                return path;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return null; // Không tìm thấy cặp nào
+    }
 }
