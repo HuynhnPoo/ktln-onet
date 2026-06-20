@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -14,28 +14,20 @@ public class HidePassToggle : MonoBehaviour
         toggle = GetComponent<Toggle>();
         toggle.isOn = false;
 
+
+        // Đăng ký sự kiện
+        toggle.onValueChanged.AddListener(OnToggleChanged);
     }
 
-    
+
 
     private void OnToggleChanged(bool isOn)
     {
         foreach (InputBase input in input) 
         {
             if (input == null) return;
-            input.SetPassVisibility(isOn);
+            input.SetPassVisibility(isOn); // thực hiện chuyển input sâng pass hay text
         }
       
-    }
-    // Start is called before the first frame update
-    void Start()
-    {
-     toggle.onValueChanged.AddListener(OnToggleChanged);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }

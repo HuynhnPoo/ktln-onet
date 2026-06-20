@@ -37,7 +37,7 @@ public class LeaderBoardCRT : MonoBehaviour
         {
             StatisticName = "Score",
             StartPosition = 0,
-            MaxResultsCount = 10,
+            MaxResultsCount = 7, // gioi hạn có 7 người
 
         };
 
@@ -59,7 +59,7 @@ public class LeaderBoardCRT : MonoBehaviour
                 GameObject obj = Instantiate(rankItemPrefab, contentContainer);
 
                 RankItem script = obj.GetComponent<RankItem>();
-                script.SetText(item.Position + 1, item.DisplayName, mainScore, highLevel);
+                script.SetText(item.Position + 1, item.DisplayName, mainScore, highLevel); // ham se dư lieu trong  bẳng
 
                 Debug.Log(
                     "#" + (item.Position + 1) +

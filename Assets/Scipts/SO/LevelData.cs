@@ -138,9 +138,6 @@ public class LevelData : ScriptableObject
     [Tooltip("Nếu bật: tile tràn ra đầu kia thay vì dừng lại tại rìa.\nVD: ShiftLeft → tile bên trái nhất xuất hiện lại bên phải.")]
     public bool gravityLoop = false;
 
-    // ══════════════════════════════════════════════════════════════════
-    //  METHODS — GRID HELPERS
-    // ══════════════════════════════════════════════════════════════════
 
     /// <summary>Đảm bảo danh sách cells đúng kích thước gridWidth × gridHeight.
     /// Gọi khi thay đổi kích thước lưới hoặc lần đầu tạo asset.</summary>
@@ -181,9 +178,6 @@ public class LevelData : ScriptableObject
         cell.iconID = iconID;
     }
 
-    // ══════════════════════════════════════════════════════════════════
-    //  METHODS — SCORE HELPERS
-    // ══════════════════════════════════════════════════════════════════
 
     /// <summary>Tính điểm thực tế cho 1 lần match, có tính combo.</summary>
     /// <param name="tileType">1 = Normal, 2 = Boost</param>

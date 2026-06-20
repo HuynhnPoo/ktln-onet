@@ -11,7 +11,7 @@ public class GameManager : SingletonBase<GameManager>
 
     [SerializeField] public GridManager gridManager { private set; get; } // để quản lí grid manager cua gameplay
 
-    private int score = 0;
+    private static int score = 0;
     public int Score { get => score; set => score = value; }
 
     private int amountScore = 0;
@@ -40,6 +40,13 @@ public class GameManager : SingletonBase<GameManager>
 
     private static bool isOnlineMode = false;
     public bool IsOnlineMode { get => isOnlineMode; set => isOnlineMode = value; }
+
+    private static bool isRevive = false;
+    public bool IsRevive { get => isRevive; set => isRevive = value; }
+
+    public float ValueRevive { get; set; } = 1000;
+
+
 
     public Action OnChangedStatusGame { get; set; }
 
@@ -75,6 +82,10 @@ public class GameManager : SingletonBase<GameManager>
     {
         isGameOver = false;
         isGameWin = false;
+        Score = 0;
+        Coin = 0;
+
+
         if (SceneManager.GetActiveScene().name == SceneType.GAMEOFFLINE.ToString()
             || SceneManager.GetActiveScene().name == SceneType.GAMEONLINE.ToString()
             || SceneManager.GetActiveScene().name == SceneType.MATCHINGONLINE.ToString())
@@ -98,12 +109,13 @@ public class GameManager : SingletonBase<GameManager>
 
             GameObject obj = UIManager.Instance.uiCenterGameoffCanvas.transform.GetChild(0).gameObject;
             PauseGame(paused, obj);
+            SetHighScore();
         }
     }
 
     void PauseGame(bool paused, GameObject pausePanel)
     {
-        RectTransform rect= pausePanel.GetComponent<RectTransform>();
+        RectTransform rect = pausePanel.GetComponent<RectTransform>();
         if (!paused)  // kiểm tra xem nêu chưa pause thi thực hiện pause
         {
             Time.timeScale = 0f;
@@ -120,11 +132,16 @@ public class GameManager : SingletonBase<GameManager>
 
                 isPaused = false;
             });
-           
+
         }
     }
     public void GameOver()
     {
+        if (!IsOnlineMode)
+        {
+            SetHighScore(); // thực hiên lưu score
+        }
+
         UIManager.Instance.StatusKeyGameStr = "gameOver.Txt";
         isGameOver = true;
         if (IsOnlineMode)
@@ -134,9 +151,15 @@ public class GameManager : SingletonBase<GameManager>
 
             GameObject obj = UIManager.Instance.uiOnlinePlayGameCanvas.transform.GetChild(2).GetChild(1).gameObject;// panel game oveer được bật
             GameObject nextLevelButton = obj.transform.GetChild(0).GetChild(2).gameObject;
+            GameObject reviveBtn = obj.transform.GetChild(0).GetChild(3).gameObject;
+            GameObject watchReviveBtn = obj.transform.GetChild(0).GetChild(4).gameObject;
+
             obj.SetActive(true);
             nextLevelButton.SetActive(false);
+            reviveBtn.SetActive(true);
+            watchReviveBtn.SetActive(true);
 
+            UIManager.Instance.uiOnlinePlayGameCanvas.transform.GetChild(0).GetChild(1).gameObject.SetActive(false); // ui setting
         }
         else
         {
@@ -144,19 +167,28 @@ public class GameManager : SingletonBase<GameManager>
             GameObject nextLevelButton = obj.transform.GetChild(0).GetChild(2).gameObject;
             obj.SetActive(true);
             nextLevelButton.SetActive(false);
-            SetHighScore();
+            // SetHighScore();
 
+            UIManager.Instance.uiCenterGameoffCanvas.transform.parent.GetChild(0).GetChild(1).gameObject.SetActive(false); //ui pausebutton
         }
+
+        SoundManager.Instance.PlaySfx("GameOverSFX");
 
         Time.timeScale = 0f; // tạm dùng time
     }
     public void GameWon()
     {
+
+        if (!IsOnlineMode)
+        {
+            SetHighScore(); // thực hiên lưu score
+        }
+
+
         UIManager.Instance.StatusKeyGameStr = "gameWon.Txt";
 
         isGameWin = true;
-
-
+        Debug.Log("hien thi" + IsGameOver + " " + isGameWin);
 
         if (IsOnlineMode)
         {
@@ -166,8 +198,17 @@ public class GameManager : SingletonBase<GameManager>
             {
                 PlayFabDataManager.Instance.playerData.highestLevel += 1;
             }
-            UIManager.Instance.uiOnlinePlayGameCanvas.transform.GetChild(2).GetChild(1).gameObject.SetActive(true);
-            UIManager.Instance.uiOnlinePlayGameCanvas.transform.GetChild(0).GetChild(1).gameObject.SetActive(false);
+            GameObject obj = UIManager.Instance.uiOnlinePlayGameCanvas.transform.GetChild(2).GetChild(1).gameObject;// panel game oveer được bật
+            GameObject nextLevelButton = obj.transform.GetChild(0).GetChild(2).gameObject;
+            GameObject reviveBtn = obj.transform.GetChild(0).GetChild(3).gameObject;
+            GameObject watchReviveBtn = obj.transform.GetChild(0).GetChild(4).gameObject;
+
+            obj.SetActive(true);
+            nextLevelButton.SetActive(true);
+            reviveBtn.SetActive(false);
+            watchReviveBtn.SetActive(false);
+
+            UIManager.Instance.uiOnlinePlayGameCanvas.transform.GetChild(0).GetChild(1).gameObject.SetActive(false); // ui setting
             //OnChangedStatusGame?.Invoke();
         }
         else
@@ -182,19 +223,26 @@ public class GameManager : SingletonBase<GameManager>
             }
 
             UIManager.Instance.uiCenterGameoffCanvas.transform.GetChild(1).gameObject.SetActive(true);
-            SetHighScore();
+            UIManager.Instance.uiCenterGameoffCanvas.transform.parent.GetChild(0).GetChild(1).gameObject.SetActive(false); //ui pausebutton
+
+            // SetHighScore();
         }
+        SoundManager.Instance.PlaySfx("GameWinSFX");
         Time.timeScale = 0f;
         Debug.Log("bạn đã chiến thắng");
     }
 
 
-    void SetHighScore()
+    public void SetHighScore()
     {
+        highScore = PlayerPrefs.GetInt(StringManager.highScoreStr, 0);
+        Debug.Log($"[LOG MANAGER] Lúc lưu điểm - Biến score thực tế đang là: {score}");
+        Debug.Log($"hien thi  2 sscore khi keets thuc {score} {highScore}");
         if (score > highScore)
         {
             highScore = score;
             PlayerPrefs.SetInt(StringManager.highScoreStr, highScore);
+            PlayerPrefs.Save();
         }
     }
 
@@ -202,5 +250,13 @@ public class GameManager : SingletonBase<GameManager>
     {
         return isMyturn;
     }
+
+    public float AddValueRevive(int value)
+
+    {
+        Debug.Log(ValueRevive * value +" "+ value+"  " + ValueRevive);
+      return  ValueRevive* value;
+    } 
+
 
 }

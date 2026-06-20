@@ -43,6 +43,7 @@ MonoBehaviour:
   - RPC_AddScore
   - RPC_HandleMatch
   - RPC_OnPlayerForfeit
+  - RPC_ExecuteDetermineWinner
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

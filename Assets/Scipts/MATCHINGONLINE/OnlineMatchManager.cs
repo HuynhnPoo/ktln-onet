@@ -13,13 +13,14 @@ public class OnlineMatchManager : MonoBehaviourPunCallbacks
 
 
     [Header("Match Settings")]
-    private float turnTime = 15; // thơi gian chuyển tủrn
+    private float turnTime = 5; // thơi gian chuyển tủrn
     private float currentTurnTimer;
     public float TimeGlobal { set; get; }
-    private float timeGlobal = 120;
+    private float timeGlobal = 120; //thời gian trung
 
     private float startTime;
     private bool matchStarted = false;
+    private bool isMatchEnded = false;
 
     private int currentTurnActorNumber;
     private Player currentTurnPlayer; // Lưu trữ đối tượng Player đang giữ lượt
@@ -34,11 +35,15 @@ public class OnlineMatchManager : MonoBehaviourPunCallbacks
     private int myScore = 0;
     private int opponentScore = 0;
     private float timeWaitCounter = 0;
-    private float maxWaitTimeout = 5;
+    private float maxWaitTimeout = 5; // thời gian để tạo ra bot
 
 
-    public TextMeshProUGUI myScoreText;
-    public TextMeshProUGUI opponentScoreText;
+    //public TextMeshProUGUI myScoreText;
+    //public TextMeshProUGUI opponentScoreText;
+    public ScorePvpTxt myScoreText;
+    public ScorePvpTxt opponentScoreText;
+    public CoinPvpTxt coinPvpText;
+
     public TextMeshProUGUI timeGlobalText;
     public override void OnEnable()
     {
@@ -63,86 +68,99 @@ public class OnlineMatchManager : MonoBehaviourPunCallbacks
 
     private void Start()
     {
-
         currentTurnTimer = turnTime;
 
+        // Nếu lúc load Scene mà phòng đã có sẵn thuộc tính này (thường là Master Client hoặc Client vào sau khi phòng đã set xong)
         if (PhotonNetwork.CurrentRoom != null && PhotonNetwork.CurrentRoom.CustomProperties.ContainsKey("MatchStartTime"))
         {
-            startTime = (float)PhotonNetwork.CurrentRoom.CustomProperties["MatchStartTime"];
-            Debug.Log("hien thi ra starttime" + startTime);
-            // matchStarted = true;
+            startTime = Convert.ToSingle(PhotonNetwork.CurrentRoom.CustomProperties["MatchStartTime"]);
         }
-        // Nếu là Master, khởi tạo lượt đầu tiên
+        else
+        {
+            // Nếu chưa có, gán tạm bằng 0 để Update() biết đường mà chờ đợi
+            startTime = 0f;
+        }
+
         if (PhotonNetwork.IsMasterClient && PhotonNetwork.InRoom)
         {
             UpdateTurnInRoomProps(PhotonNetwork.LocalPlayer.ActorNumber);
         }
 
-        // Đợi một chút để dữ liệu phòng đồng bộ rồi mới kiểm tra lượt
         Invoke("UpdateCurrentTurnPlayer", 0.2f);
-
     }
-
     void Update()
     {
-        if (!PhotonNetwork.InRoom && startTime <= 0) return;
-        if (PhotonManager.Instance.IsPlayingOnline && matchStarted)
+        // 1. Nếu không ở trong phòng hoặc game đã hạ màn thì dừng toàn bộ Update
+        if (!PhotonNetwork.InRoom) return;
+        if (isMatchEnded) return;
+
+        // 2. Logic xử lý BOT hoặc đợi đồng bộ lượt
+        if (currentTurnPlayer == null)
+        {
+            timeWaitCounter += Time.deltaTime;
+            if (timeWaitCounter > maxWaitTimeout)
+            {
+                Debug.Log("Cho BOT vào room");
+                StartGameWithBot(); // thực hiện tạo bot ở phòng BOT
+            }
+        }
+        else
+        {
+            timeWaitCounter = 0f;
+        }
+
+        // 3. LOGIC ĐẾM THỜI GIAN TRẬN ĐẤU (Đã sửa đổi để kiểm tra startTime)
+        // CHỈ TÍNH TOÁN KHI: startTime đã nhận giá trị hợp lệ từ Room Properties (> 0)
+        if (startTime > 0)
         {
             double elapsedTime = PhotonNetwork.Time - startTime;
             float remainingTime = timeGlobal - (float)elapsedTime;
-            if (remainingTime < 0) remainingTime = 0; // Không cho xuống số âm
-            Debug.Log(remainingTime);
-            timeGlobalText.SetText(remainingTime.ToString("F1") + "s");
+
+            if (remainingTime < 0) remainingTime = 0;
+
+            if (timeGlobalText != null)
+            {
+                timeGlobalText.SetText(remainingTime.ToString("F1") + "s");
+            }
             TimeGlobal = remainingTime;
 
-            if (remainingTime <= 0)
+            // Chỉ cần thời gian về 0 và là Master Client thì kết thúc game luôn
+            if (remainingTime <= 0 && PhotonNetwork.IsMasterClient)
             {
+                Debug.Log("<color=red>[TIMER]</color> Hết giờ! Master Client phát lệnh kết thúc trận.");
                 DetermineWinner();
             }
         }
         else
         {
-            // Nếu trận đấu chưa bắt đầu, hiển thị thời gian chờ mặc định trên UI
-            timeGlobalText.SetText(timeGlobal.ToString("F1") + "s");
-        }
-
-        if (currentTurnPlayer == null)
-        {
-            timeWaitCounter += Time.deltaTime; // Tăng chính xác theo giây thực tế
-
-            //// [Mở rộng sau này]: Nếu chờ quá lâu (ví dụ > 10s) do mất mạng hoặc lỗi đồng bộ
-            if (timeWaitCounter > maxWaitTimeout)
+            // TRONG LÚC ĐỢI ĐỒNG BỘ: Giữ nguyên số thời gian gốc trên UI, không cho chạy số âm lung tung
+            if (timeGlobalText != null)
             {
-                Debug.Log("cho bot vào room");
-                StartGameWithBot();
+                timeGlobalText.SetText(timeGlobal.ToString("F1") + "s");
             }
         }
-        else
-        {
-            timeWaitCounter = 0f; // Reset bộ đếm khi đã đồng bộ xong lượt
-        }
 
+        // 4. Logic trừ thời gian lượt (Turn) của người chơi/BOT
         if (isMyTurn)
         {
             currentTurnTimer -= Time.deltaTime;
             if (currentTurnTimer <= 0)
             {
-                ChangeTurn(); // chuyển sang người khác khi hêt currentTurnTimer
+                ChangeTurn();
             }
         }
-        else if (PhotonNetwork.CurrentRoom != null && PhotonNetwork.CurrentRoom.CustomProperties.ContainsKey("IsWithBot") && currentTurnActorNumber == -1)
+        else if (PhotonNetwork.CurrentRoom.CustomProperties.ContainsKey("IsWithBot") && currentTurnActorNumber == -1)
         {
-            // Nếu đang là lượt của BOT, máy Master (là bạn) cũng sẽ trừ thời gian turn của Bot đi
             currentTurnTimer -= Time.deltaTime;
             if (currentTurnTimer <= 0 && PhotonNetwork.IsMasterClient)
             {
-                Debug.Log("BOT hết thời gian 15s, tự động thu hồi lượt về cho Player.");
-                UpdateTurnInRoomProps(PhotonNetwork.LocalPlayer.ActorNumber); // Ép chuyển về lượt của bạn
+                Debug.Log("BOT hết thời gian, tự động thu hồi lượt.");
+                UpdateTurnInRoomProps(PhotonNetwork.LocalPlayer.ActorNumber);
             }
         }
+
         UpdateUI();
     }
-
 
     private void HandleMatchFound(List<Vector2Int> path)
     {
@@ -173,10 +191,11 @@ public class OnlineMatchManager : MonoBehaviourPunCallbacks
         {
             gm.HandleMatch(path);
             // 3. Sử dụng PhotonMessageInfo để xác định chính xác AI hay Người chơi gửi yêu cầu ăn ô
-            int senderActorNumber = info.Sender.ActorNumber;
 
             if (PhotonNetwork.InRoom)
             {
+
+                int senderActorNumber = currentTurnActorNumber;
                 // Đồng bộ trực tiếp điểm số dựa theo ID người gửi gói tin RPC này qua mạng
                 photonView.RPC(nameof(RPC_AddScore), RpcTarget.All, senderActorNumber, 10);
             }
@@ -230,6 +249,7 @@ public class OnlineMatchManager : MonoBehaviourPunCallbacks
         if (currentTurnActorNumber == -1)
         {
             turnStatusText.text = $"Lượt của: BOT AI ({currentTurnTimer:F1}s)";
+            return;
         }
         if (currentTurnPlayer != null)
         {
@@ -238,7 +258,7 @@ public class OnlineMatchManager : MonoBehaviourPunCallbacks
         }
         else
         {
-            turnStatusText.text = $"Đang đợi đồng bộ lượt... {timeWaitCounter:F1}s";
+            turnStatusText.text = $"Đang đợi đợi người chơi... {timeWaitCounter:F1}s";
         }
     }
 
@@ -301,11 +321,12 @@ public class OnlineMatchManager : MonoBehaviourPunCallbacks
         // KIỂM TRA VÀ CẬP NHẬT THỜI GIAN TRẬN ĐẤU
         if (propertiesThatChanged.ContainsKey("MatchStartTime"))
         {
-            startTime = (float)propertiesThatChanged["MatchStartTime"];
+            startTime = Convert.ToSingle(propertiesThatChanged["MatchStartTime"]);
             Debug.Log("Đã nhận startTime mới từ Server: " + startTime);
         }
     }
 
+    // thực hien khi kết nôi thành công sẽ  tăng điểm
     private void HandleMatchScored(int score)
     {
         if (!PhotonNetwork.InRoom) return;
@@ -316,6 +337,12 @@ public class OnlineMatchManager : MonoBehaviourPunCallbacks
     [PunRPC]
     public void RPC_AddScore(int scorerActorNumber, int amount)
     {
+        if (scorerActorNumber == -1)
+        {
+            opponentScore += amount;
+
+            return;
+        }
         // Tìm xem người vừa ghi điểm là ai trong danh sách Player
         foreach (Player p in PhotonNetwork.PlayerList)
         {
@@ -325,15 +352,13 @@ public class OnlineMatchManager : MonoBehaviourPunCallbacks
                 {
                     // Nếu chính là máy này ghi điểm
                     myScore += amount;
-                    if (myScoreText != null)
-                        myScoreText.text = $"Bạn: {myScore}";
+
                 }
                 else
                 {
                     // Nếu là máy khác ghi điểm (đối thủ)
                     opponentScore += amount;
-                    if (opponentScoreText != null)
-                        opponentScoreText.text = $"Đối thủ: {opponentScore}";
+
                 }
                 break;
             }
@@ -342,60 +367,128 @@ public class OnlineMatchManager : MonoBehaviourPunCallbacks
         Debug.Log($"Player {scorerActorNumber} ghi điểm. MyScore: {myScore}, Opponent: {opponentScore}");
     }
 
+    public int GetMyScore()
+    {
+        return myScore;
+    }
+
+    public int GetOpponentScore()
+    {
+        return opponentScore;
+    }
+    // hàm thực hiện kiểm tra  win và hay thua
+    // 1. Hàm này được gọi từ Update của Master Client
     public void DetermineWinner()
     {
+        if (isMatchEnded) return;
+
+        if (PhotonNetwork.InRoom)
+        {
+            // Gửi lệnh RPC cho TẤT CẢ mọi người trong phòng (bao gồm cả Master và Client)
+            photonView.RPC(nameof(RPC_ExecuteDetermineWinner), RpcTarget.All);
+        }
+        else
+        {
+            // Nếu chơi một mình thì tự chạy trực tiếp
+            ExecuteDetermineWinnerLocal();
+        }
+    }
+
+    // 2. Hàm tiếp nhận lệnh từ mạng Photon
+    [PunRPC]
+    public void RPC_ExecuteDetermineWinner()
+    {
+        ExecuteDetermineWinnerLocal();
+    }
+
+    // 3. Hàm xử lý logic hiển thị UI và cộng điểm thực sự trên từng máy
+    private void ExecuteDetermineWinnerLocal()
+    {
+        if (isMatchEnded) return;
+        isMatchEnded = true; // Khóa Update ngay lập tức, thời gian sẽ dừng hẳn ở 0.0s
+
         PhotonManager.Instance.IsPlayingOnline = false;
+
+        if (UIManager.Instance.uiOnlineMatchPlayGameCanvas != null)
+        {
+            UIManager.Instance.uiOnlineMatchPlayGameCanvas.transform.GetChild(1).gameObject.SetActive(true);
+
+        }
+
+        int valueCoin = 0;
+
         if (myScore > opponentScore)
         {
-            Debug.Log("ddiem so " + myScore + " " + opponentScore + " thắng");
-
-            UIManager.Instance.uiOnlineMatchPlayGameCanvas.transform.GetChild(1).gameObject.SetActive(true); // hiển thi ui pause game
+            Debug.Log("Điểm số " + myScore + " - " + opponentScore + " -> THẮNG");
+            valueCoin = 50;
             UIManager.Instance.StatusKeyGameOnlineStr = "gameWon.Txt";
-            StartCoroutine(RoutineChangeScene());
+            SoundManager.Instance.PlaySfx("GameWinSFX");
         }
         else if (myScore < opponentScore)
         {
-            Debug.Log("ddiem so " + myScore + " " + opponentScore + "thua");
-
-            UIManager.Instance.uiOnlineMatchPlayGameCanvas.transform.GetChild(1).gameObject.SetActive(true);
+            valueCoin = 10;
+            Debug.Log("Điểm số " + myScore + " - " + opponentScore + " -> THUA");
             UIManager.Instance.StatusKeyGameOnlineStr = "gameOver.Txt";
-
+            SoundManager.Instance.PlaySfx("GameOverSFX");
         }
-        else { Debug.Log("HÒA RỒIS"); }
-    }
+        else
+        {
+            valueCoin = 20;
+            Debug.Log("Điểm số " + myScore + " - " + opponentScore + " -> HÒA");
+            UIManager.Instance.StatusKeyGameOnlineStr = "gameWon.Txt";
+        }
 
-    IEnumerator RoutineChangeScene()
+        if (PlayFabDataManager.Instance != null && PlayFabDataManager.Instance.playerData != null)
+        {
+            GameMechanics.AddCoinPvP(PlayFabDataManager.Instance.playerData, valueCoin);
+        }
+
+        if (coinPvpText != null)
+        {
+            coinPvpText.DisplayRewardCoins(valueCoin);
+        }
+
+        StartCoroutine(RoutineChangeScene()); // chuyển về menuoninle
+    }
+    IEnumerator RoutineChangeScene() // chuyển về sence mainmeunu online
     {
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(2);
         UIManager.Instance.ChangeScene(UIManager.SceneType.ONLINEMAINMENU);
     }
 
 
-    // Thêm hàm này vào trong class OnlineMatchManager
+    // hàm thực hiên khi thoát
     [PunRPC]
     public void RPC_OnPlayerForfeit(int quitterActorNumber)
     {
-        PhotonManager.Instance.IsPlayingOnline = false;
+        if (isMatchEnded) return; // Tránh chạy trùng lặp nếu game đã kết thúc trước đó
+        isMatchEnded = true;
 
+        PhotonManager.Instance.IsPlayingOnline = false;
+        int valueCoin = 0;
+        // Hiển thị UI kết quả (Panel ở vị trí GetChild(1))
+        if (UIManager.Instance.uiOnlineMatchPlayGameCanvas != null)
+        {
+            UIManager.Instance.uiOnlineMatchPlayGameCanvas.transform.GetChild(1).gameObject.SetActive(true);
+        }
         // Nếu ActorNumber truyền lên là của mình -> Mình là người nhấn Quit -> THUA
         if (PhotonNetwork.LocalPlayer.ActorNumber == quitterActorNumber)
         {
             UIManager.Instance.StatusKeyGameOnlineStr = "gameOver.Txt"; // Hoặc key bạn dùng cho "Bỏ cuộc"
             Debug.Log("Bạn đã bỏ cuộc và bị xử thua.");
+            valueCoin = 10;
         }
         else
         {
             // Nếu không phải mình -> Đối thủ nhấn Quit -> MÌNH THẮNG
             UIManager.Instance.StatusKeyGameOnlineStr = "gameWon.Txt";
             Debug.Log("Đối thủ đã thoát. Bạn thắng!");
+            valueCoin = 50;
         }
 
-        // Hiển thị UI kết quả (Panel ở vị trí GetChild(1))
-        if (UIManager.Instance.uiOnlineMatchPlayGameCanvas != null)
-        {
-            UIManager.Instance.uiOnlineMatchPlayGameCanvas.transform.GetChild(1).gameObject.SetActive(true);
-        }
 
+        GameMechanics.AddCoinPvP(PlayFabDataManager.Instance.playerData, valueCoin);
+        coinPvpText.DisplayRewardCoins(valueCoin);
         StopAllCoroutines();
         // Tự động quay về Menu sau vài giây hoặc chờ người dùng nhấn nút trên UI
         StartCoroutine(RoutineChangeScene());
@@ -422,20 +515,32 @@ public class OnlineMatchManager : MonoBehaviourPunCallbacks
     // Đánh dấu phòng này có Bot qua Custom Properties
     void StartGameWithBot()
     {
+        if (!PhotonNetwork.InRoom || !PhotonNetwork.IsMasterClient) return;
+
+        Debug.Log("<color=yellow>[BOT MODE]</color> Quá thời gian chờ. Đang tiến hành ẩn/khóa phòng và cấu hình BOT...");
+       PhotonNetwork.CurrentRoom.IsOpen=false; // đóng phòng không ai vào
+        PhotonNetwork.CurrentRoom.IsVisible=false; // ẩn phòng khỏi danh sách tạo ngẫu nhiên
+        
         ExitGames.Client.Photon.Hashtable props = new ExitGames.Client.Photon.Hashtable();
         props.Add("IsWithBot", true);
         // 2. QUAN TRỌNG: Tự sinh thời gian bắt đầu trận đấu ngay tại đây vì không có người thứ 2 vào phòng
         if (!PhotonNetwork.CurrentRoom.CustomProperties.ContainsKey("MatchStartTime"))
         {
             props.Add("MatchStartTime", (float)PhotonNetwork.Time);
+            startTime = (float)PhotonNetwork.Time;
+        }
+        else
+        {
+            // Nếu ĐÃ CÓ thời gian từ trận PvP trước đó, lấy lại thời gian đó, KHÔNG ghi đè bừa bãi
+            startTime = Convert.ToSingle(PhotonNetwork.CurrentRoom.CustomProperties["MatchStartTime"]);
         }
         props.Add("CurrentTurnActor", PhotonNetwork.LocalPlayer.ActorNumber);
 
         PhotonNetwork.CurrentRoom.SetCustomProperties(props);
 
         // Kích hoạt biến thời gian trên máy local ngay lập tức
-        startTime = (float)PhotonNetwork.Time;
-        currentTurnTimer = turnTime;
+        //currentTurnTimer = turnTime;
+        matchStarted = true;
         UpdateCurrentTurnPlayer();
     }
 }

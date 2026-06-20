@@ -11,7 +11,7 @@ public class GameBegin : MonoBehaviour
     [SerializeField] private RectTransform[] transformUI;
     [SerializeField] private RectTransform canvasRect;
     Vector2 startPos;
-    float time = 2.5f;
+    float time = 2f;
 
     private void OnEnable()
     {
@@ -25,7 +25,7 @@ public class GameBegin : MonoBehaviour
                 // Tạo vị trí xuất phát ở rìa phải màn hình
                 startPos = new Vector2(screenWidth, 0);
 
-                transformUI[0].ShowPopup(time);
+                transformUI[0].ShowPopup(time,Ease.OutQuart);
                 transformUI[1].MoveUI(startPos, time);
                 break;
             case UIManager.SceneType.FORM:
@@ -36,7 +36,7 @@ public class GameBegin : MonoBehaviour
 
                 startPos = new Vector2(-screenWidth, 0);
 
-                transformUI[0].ShowPopup(time);
+                transformUI[0].ShowPopup(time,Ease.OutQuart);
                 transformUI[1].MoveUI(startPos, time);
                 transformUI[2].MoveUI(-startPos, time);
                 break;

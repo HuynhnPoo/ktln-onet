@@ -151,6 +151,22 @@ MonoBehaviour:
     m_Key: UseItemShop_Btn
     m_Metadata:
       m_Items: []
+  - m_Id: 24248952789147648
+    m_Key: LevelUI_txt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 26800477960937472
+    m_Key: newGameOnline
+    m_Metadata:
+      m_Items: []
+  - m_Id: 28255333527592960
+    m_Key: reviveSpend_Txt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 28255441623195648
+    m_Key: reviveWatch_Txt
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

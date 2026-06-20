@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a4e9f9be2b7996c4fbc7918e01e11014, type: 3}
+  m_Name: PixelAnimal
+  m_EditorClassIdentifier: 
+  skinName: Skin Animals
+  price: 100
+  isUnlocked: 1
+  isSelected: 0
+  tileSprites:
+  - {fileID: 754704561, guid: 3038ede22f443ed4dbbeffc42c060062, type: 3}
+  - {fileID: 989626931, guid: 3038ede22f443ed4dbbeffc42c060062, type: 3}
+  - {fileID: 1213979119, guid: 3038ede22f443ed4dbbeffc42c060062, type: 3}
+  - {fileID: -1127120936, guid: 3038ede22f443ed4dbbeffc42c060062, type: 3}
+  - {fileID: 2065279032, guid: 3038ede22f443ed4dbbeffc42c060062, type: 3}
+  - {fileID: -10416474, guid: 3038ede22f443ed4dbbeffc42c060062, type: 3}
+  - {fileID: -551753635, guid: 3038ede22f443ed4dbbeffc42c060062, type: 3}
+  - {fileID: -560798807, guid: 3038ede22f443ed4dbbeffc42c060062, type: 3}
+  - {fileID: -1177374817, guid: 3038ede22f443ed4dbbeffc42c060062, type: 3}
+  - {fileID: 1039707503, guid: 3038ede22f443ed4dbbeffc42c060062, type: 3}
+  scaleMultiplier: 0.5
+  tintColor: {r: 1, g: 1, b: 1, a: 1}
+  rotationOffset: 0

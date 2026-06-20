@@ -22,10 +22,10 @@ public static class StringManager
     public static readonly string notifail = "login/ReisgerFail.Txt";
     public static readonly string notiLoginSuccess = "loginSucces.Txt";
     public static readonly string notiRegisterSuccess = "RegisterSucces.Txt";
-    public static readonly string notiForgotSuccess = "ForgotSucces_Txt";  
-   
+    public static readonly string notiForgotSuccess = "ForgotSucces_Txt";
+
     public static readonly string titlleLogin = "loginGame.Txt";
-   public static readonly string titlleRegister = "registerGame.Txt";
+    public static readonly string titlleRegister = "registerGame.Txt";
     public static readonly string titlleForgot = "forgotPass.Txt";
 
 

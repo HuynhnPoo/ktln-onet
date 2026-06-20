@@ -3,6 +3,7 @@ using PlayFab;
 using PlayFab.ClientModels;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using System.Collections;
 
 public enum ItemType
 {
@@ -100,6 +101,11 @@ public class PlayerData
             return false;
 
         currentTileId = id;
+        // Gọi Save tổng để đồng bộ lên Cloud ngay lập tức
+        if (PlayFabDataManager.Instance != null)
+        {
+            PlayFabDataManager.Instance.SavePlayerData();
+        }
         return true;
     }
 
@@ -112,6 +118,11 @@ public class PlayerData
             return false;
 
         currentLineId = id;
+        // Gọi Save tổng để đồng bộ lên Cloud ngay lập tức
+        if (PlayFabDataManager.Instance != null)
+        {
+            PlayFabDataManager.Instance.SavePlayerData();
+        }
         return true;
     }
 
@@ -140,12 +151,16 @@ public class PlayerData
             currentLineId = "line_default";
         }
     }
+
+
 }
 
 public class PlayFabDataManager : SingletonBase<PlayFabDataManager>
 {
 
     public PlayerData playerData;
+    private Coroutine saveCoroutine;
+    private const float SAVE_DELAY = 3f;
 
     int valueMax = 999999;
 
@@ -183,7 +198,8 @@ public class PlayFabDataManager : SingletonBase<PlayFabDataManager>
                     playerData = CreateDefaultData();
 
                     // 🔥 GẮN DATA VÀO ACCOUNT
-                     SavePlayerData();
+                    //  SavePlayerData();
+                    SavePlayerDataImmediately();
                 }
 
                 onDone?.Invoke();
@@ -201,27 +217,44 @@ public class PlayFabDataManager : SingletonBase<PlayFabDataManager>
             Debug.LogError("PlayerData NULL");
             return;
         }
+     
+        if(saveCoroutine != null)  StopCoroutine(saveCoroutine);
 
-        // Validate data trước khi save
+        saveCoroutine = StartCoroutine(DelaySaveRoutine());
+        
+    }
+
+    private IEnumerator DelaySaveRoutine() // delay để  lưu dư liệu
+    {
+        Debug.Log("thực hiện chờ save ");
+        yield return new WaitForSeconds(SAVE_DELAY);
+
+        SavePlayerDataImmediately() ;
+        saveCoroutine = null;
+    }
+
+
+    private void SavePlayerDataImmediately()
+    {
+        if (playerData == null) return;
         playerData.ValidateData();
 
-        // Clamp dữ liệu
         playerData.gold = Mathf.Clamp(playerData.gold, 0, valueMax);
         playerData.score = Mathf.Clamp(playerData.score, 0, valueMax);
 
         string json = JsonUtility.ToJson(playerData);
-
         var request = new UpdateUserDataRequest()
         {
-            Data = new Dictionary<string, string>()
+            Data = new Dictionary<string, string>() 
             {
                 { "PlayerData", json }
             }
         };
 
         PlayFabClientAPI.UpdateUserData(request,
-            result => Debug.Log("Save thành công"),
-            error => Debug.LogError(error.GenerateErrorReport()));
+           result => Debug.Log("Save thành công"),
+           error => Debug.LogError(error.GenerateErrorReport()));
+
     }
 
     // ================= DEFAULT =================
@@ -246,6 +279,14 @@ public class PlayFabDataManager : SingletonBase<PlayFabDataManager>
     }
 
 
+    private void OnApplicationQuit()
+    {
+        if (saveCoroutine != null)
+        {
+            StopCoroutine(saveCoroutine);
+            SavePlayerDataImmediately();
+        }
+    }
 
     //
     public void SaveLeaderboard()
@@ -288,5 +329,5 @@ public class PlayFabDataManager : SingletonBase<PlayFabDataManager>
                 Debug.LogError(error.GenerateErrorReport());
             });
     }
- 
+
 }

@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 555d57f04f8db8c4a9ca1a39223fd57f, type: 3}
+  m_Name: TileDatabase
+  m_EditorClassIdentifier: 
+  allSkinPacks:
+  - {fileID: 11400000, guid: 802b1d04d6839994098a76568f189338, type: 2}
+  - {fileID: 11400000, guid: bd70e4ac44eeb864eb10e049b13ddca8, type: 2}
+  - {fileID: 11400000, guid: d543c3cfb0d447742a4c966176cc7dc5, type: 2}
+  - {fileID: 11400000, guid: b3456fa822a964c4e9b1e7c85a0737ce, type: 2}

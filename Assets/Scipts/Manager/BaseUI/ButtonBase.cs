@@ -26,7 +26,12 @@ public abstract class ButtonBase : MonoBehaviour
     }
     public virtual void AddEventListener()
     {
-        this.button.onClick.AddListener(this.OnClick);
+        this.button.onClick.AddListener(() =>
+        {
+            SoundManager.Instance.PlaySfx("ClickSFX");
+
+            OnClick();
+        });
     }
     public abstract void OnClick();
 

@@ -22,38 +22,3 @@ public class TileData : ScriptableObject
       
 }
 
-[CreateAssetMenu(fileName = "TileDatabase", menuName = "Onet/TileDatabase")]
-public class TileDatabase : ScriptableObject
-{
-    public List<TileData> allSkinPacks = new List<TileData>();  // Danh sách các bộ skin để bán
-
-    public TileData GetSelectedSkinPack()
-    {
-        foreach (var pack in allSkinPacks)
-            if (pack.isSelected) return pack;
-        return allSkinPacks.Count > 0 ? allSkinPacks[0] : null;  // Default bộ đầu nếu chưa chọn
-    }
-
-    public void SelectSkinPack(TileData selectedPack)
-    {
-        foreach (var pack in allSkinPacks)
-            pack.isSelected = (pack == selectedPack);
-    }
-
-    // Hàm mua (gọi từ UI Shop)
-    public bool BuySkinPack(TileData packToBuy, int playerCoins)
-    {
-        if (packToBuy.isUnlocked) return true;  // Đã mua rồi
-
-        if (playerCoins >= packToBuy.price)
-        {
-            // Trừ coins (bạn tự implement hệ thống coins)
-            // playerCoins -= packToBuy.price;
-
-            packToBuy.isUnlocked = true;
-            SelectSkinPack(packToBuy);  // Mua xong auto chọn luôn (hoặc để người chơi chọn sau)
-            return true;
-        }
-        return false;  // Không đủ tiền
-    }
-}

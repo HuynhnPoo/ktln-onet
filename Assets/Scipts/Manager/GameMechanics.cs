@@ -6,7 +6,7 @@ using UnityEngine;
 public static class GameMechanics
 {
     private static bool timeUp = false;
-    private static int currentScore = 0;
+    //private static int currentScore = 0;
     private static float currentTime = 0;
     private static float maxTime = 0;
 
@@ -14,38 +14,39 @@ public static class GameMechanics
     public static void Init(int time, int amountScore, BoardGravityType type)
     {
         GameManager.Instance.AmountScore = amountScore;
-        currentScore = 0;
+       // currentScore = 0;
         timeUp = false;
         currentTime = time;
         maxTime = time;
 
         gravityType = type;
-        Debug.Log(gravityType);
         // Debug.Log("hien thi"+currentTime);
     }
 
     public static void AddScore(int amout)
     {
-        currentScore += amout;
-        GameManager.Instance.Score = currentScore;
+        GameManager.Instance.Score += amout;
+        //GameManager.Instance.Score = currentScore;
     }
 
     public static void AddTime(int amount)
     {
-        if (timeUp) return;
-
+        timeUp = false;
         currentTime += amount;
     }
 
     public static float CountDown()
     {
+        
         if (!timeUp)
         {
             currentTime -= Time.deltaTime;
-            //   Debug.Log("hien thi ra "+ time);
+        
+           //   Debug.Log("hien thi ra "+ time);
             if (currentTime <= 0)
             {
                 timeUp = true;
+
                 currentTime = 0;
 
                 Debug.Log("het gio");
@@ -60,7 +61,7 @@ public static class GameMechanics
 
     public static float GetTimeRatio() => currentTime / maxTime;
 
-    // hàm kiểm tra theo chiều x
+    // hàm kiểm tra theo chiều 3
     static bool CheckLineX(int y, int x1, int x2, Board board)
     {
         int min = Mathf.Min(x1, x2);
@@ -69,7 +70,7 @@ public static class GameMechanics
         for (int x = min + 1; x < max; x++)
         {
             var cell = board.GetCell(x, y);
-            if (cell != null && cell.type != 0)
+            if (cell != null && cell.type != 0 && !cell.IsEmpty) //cell != null && cell.type != 0
             {
 
                 Debug.Log($"Bị chặn tại ô: {x}, {y} vì type = {cell.type}");
@@ -89,7 +90,7 @@ public static class GameMechanics
         for (int y = min + 1; y < max; y++)
         {
             var cell = board.GetCell(x, y);
-            if (cell != null && cell.type != 0)
+            if (cell != null && cell.type != 0 && !cell.IsEmpty)//cell != null && cell.type != 0
             {
 
 
@@ -106,7 +107,8 @@ public static class GameMechanics
     {
         // Điểm góc 1: (a.x, b.y)
         Vector2Int p1 = new Vector2Int(a.x, b.y);
-        if (board.GetCell(p1.x, p1.y).type == 0)
+        var cellP1 = board.GetCell(p1.x, p1.y);
+        if (cellP1 != null && (cellP1.type == 0 || cellP1.IsEmpty)) //board.GetCell(p1.x, p1.y).type == 0
         {
             if (CheckLineY(a.x, a.y, p1.y, board) && CheckLineX(b.y, p1.x, b.x, board))
                 return new List<Vector2Int> { a, p1, b };
@@ -114,7 +116,8 @@ public static class GameMechanics
 
         // Điểm góc 2: (b.x, a.y)
         Vector2Int p2 = new Vector2Int(b.x, a.y);
-        if (board.GetCell(p2.x, p2.y).type == 0)
+        var cellP2 = board.GetCell(p2.x, p2.y);
+        if (cellP2 != null && (cellP2.type == 0 || cellP2.IsEmpty)) //board.GetCell(p2.x, p2.y).type == 0
         {
             if (CheckLineX(a.y, a.x, p2.x, board) && CheckLineY(b.x, p2.y, b.y, board))
                 return new List<Vector2Int> { a, p2, b };
@@ -191,6 +194,34 @@ public static class GameMechanics
         return null;
     }
 
+    public static bool CheckNoMatchTile(Board board, int width, int height)
+    {
+        bool hasTile = false;
+
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                var cell = board.GetCell(x, y);
+                // ✅ Chỉ đếm tile thực sự có thể match (type 1 hoặc 2)
+                if (cell != null && cell.IsMatchable)
+                {
+                    hasTile = true;
+                    break;
+                }
+            }
+            if (hasTile) break;
+        }
+
+        // Không còn tile nào → thắng rồi, không phải deadlock
+        if (!hasTile) return false;
+
+        List<Vector2Int> nextMatch = FindPossibleMatch(board, width, height);
+        Debug.Log("FindPossibleMatch result: " + (nextMatch == null ? "NULL - hết nước đi!" : "Còn nước đi"));
+
+        return nextMatch == null;
+    }
+
     public static string CreateRamdomRoomName()
     {
         string gluphs = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -221,6 +252,19 @@ public static class GameMechanics
 
         PlayFabDataManager.Instance.SavePlayerData();
         PlayFabDataManager.Instance.SaveLeaderboard();
+    }
+
+    public static void AddCoinPvP(PlayerData playerData, int goldAmount)
+    {
+        if (playerData == null) return;
+
+        GameManager.Instance.TotalCoinOnline += goldAmount;
+        playerData.gold = GameManager.Instance.TotalCoinOnline;
+        GameManager.Instance.Coin += goldAmount;
+        Debug.Log("thực hiện add scpre và coin" + GameManager.Instance.Coin);
+
+
+        PlayFabDataManager.Instance.SavePlayerData();
     }
 
     // update điềm số  khi online
@@ -546,44 +590,56 @@ public static class GameMechanics
         }
         return gridCells;
     }
+    // hàm tìm đương có thể tự match được
     public static List<Vector2Int> FindPossibleMatch(Board board, int width, int height)
     {
         for (int x1 = 0; x1 < width; x1++)
         {
             for (int y1 = 0; y1 < height; y1++)
             {
-                // 1. Bỏ qua nếu ô bắt đầu trống (đã bị xóa trước đó)
-                if (board.IsEmpty(x1, y1)) continue;
+                var cell1 = board.GetCell(x1, y1);
+
+                // ✅ Bỏ qua ô trống VÀ obstacle
+                if (cell1 == null || !cell1.IsMatchable) continue;
 
                 for (int x2 = 0; x2 < width; x2++)
                 {
                     for (int y2 = 0; y2 < height; y2++)
                     {
-                        // 2. CHÍNH LÀ ĐÂY: Nếu trùng tọa độ thì KHÔNG ĐƯỢC nối, bỏ qua ngay!
                         if (x1 == x2 && y1 == y2) continue;
 
-                        // 3. Bỏ qua nếu ô kết thúc trống
-                        if (board.IsEmpty(x2, y2)) continue;
+                        var cell2 = board.GetCell(x2, y2);
 
-                        // 4. Kiểm tra hai ô phải cùng loại (cùng ID/Cùng hình ảnh)
-                        if (board.GetCell(x1,y1).iconID == board.GetCell(x2,y2).iconID)
+                        // ✅ Bỏ qua ô trống VÀ obstacle
+                        if (cell2 == null || !cell2.IsMatchable) continue;
+
+                        if (cell1.iconID == cell2.iconID)
                         {
                             Vector2Int p1 = new Vector2Int(x1, y1);
                             Vector2Int p2 = new Vector2Int(x2, y2);
 
-                            // 5. Tìm đường đi giữa 2 ô khác nhau này
                             List<Vector2Int> path = GetPath(p1, p2, board);
 
                             if (path != null && path.Count >= 2)
                             {
-                                // Tìm thấy 1 cặp hợp lệ thì trả về ngay cho Bot ăn
-                                return path;
+                                // ✅ Kiểm tra path không đi qua ô ngoài biên
+                                bool validPath = true;
+                                for (int i = 1; i < path.Count - 1; i++)
+                                {
+                                    Vector2Int mid = path[i];
+                                    if (mid.x < 0 || mid.x >= width || mid.y < 0 || mid.y >= height)
+                                    {
+                                        validPath = false;
+                                        break;
+                                    }
+                                }
+                                if (validPath) return path;
                             }
                         }
                     }
                 }
             }
         }
-        return null; // Không tìm thấy cặp nào
+        return null;
     }
 }

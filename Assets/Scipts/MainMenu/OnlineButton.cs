@@ -30,6 +30,8 @@ public class OnlineButton : ButtonBase
             return;
         }
     }
+
+    // hiên thi nếu khogno có internet
     IEnumerator AcitveNotiInternet()
     {
         // 1. Lấy tham chiếu

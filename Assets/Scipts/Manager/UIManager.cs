@@ -12,7 +12,8 @@ public class UIManager : SingletonBase<UIManager>
     private static bool isLogin = true;
     public bool IsLogin { get => isLogin; set => isLogin = value; }
 
-    public string StatusResultsOnline {  get; set; }   
+    public string StatusResultsOnline { get; set; }
+    public string levelStatusStr { get; set; }
 
 
     public static string titlleFormGame = "";

@@ -78,6 +78,7 @@ public class AutoLocalizeText : MonoBehaviour
 
     private void UpdateTitlleForm(string titlleFormGame)
     {
+        if (transform.name != "Titlle_Text") return;
         if (SceneManager.GetActiveScene().name == SceneType.FORM.ToString()
               && localizeEvent != null
               && transform.name == "Titlle_Text")
@@ -90,20 +91,19 @@ public class AutoLocalizeText : MonoBehaviour
 
     public void StatusResultsGame()
     {
+        // 1. Chỉ xử lý nếu ĐÚNG là text hiển thị kết quả trận đấu
+        if (transform.name != "ResultGameText") return;
 
-        if (SceneManager.GetActiveScene().name == SceneType.GAMEOFFLINE.ToString()  && localizeEvent != null)
+        string currentScene = SceneManager.GetActiveScene().name;
+
+        // 2. Kiểm tra scene Offline hoặc Online
+        if ((currentScene == SceneType.GAMEOFFLINE.ToString() || currentScene == SceneType.GAMEONLINE.ToString())
+            && localizeEvent != null)
         {
+            // Chỉ cập nhật chữ Win/Lose khi thực sự có trạng thái Win hoặc Over
             if (GameManager.Instance.IsGameWin || GameManager.Instance.IsGameOver)
             {
-                Debug.Log($"<color=yellow>Localize:</color> Cập nhật trạng thái cho {transform.name}");
-                localizeEvent.StringReference.SetReference(TABLE_NAME, UIManager.Instance.StatusKeyGameStr);
-                localizeEvent.RefreshString();
-            }
-        } else if(SceneManager.GetActiveScene().name == SceneType.GAMEONLINE.ToString()  && localizeEvent != null) 
-        {
-            if (GameManager.Instance.IsGameWin || GameManager.Instance.IsGameOver)
-            {
-                Debug.Log($"<color=yellow>Localize:</color> Cập nhật trạng thái cho {transform.name}");
+                Debug.Log($"<color=yellow>Localize:</color> Cập nhật trạng thái thắng/thua cho {transform.name}");
                 localizeEvent.StringReference.SetReference(TABLE_NAME, UIManager.Instance.StatusKeyGameStr);
                 localizeEvent.RefreshString();
             }
@@ -113,6 +113,8 @@ public class AutoLocalizeText : MonoBehaviour
 
     public void UpdateNotiForm(string keyNotification)
     {
+        if (transform.name != "Notification_Text") return;
+
         if (SceneManager.GetActiveScene().name == SceneType.FORM.ToString()
             && localizeEvent != null
             && transform.name == "Notification_Text")
@@ -125,11 +127,15 @@ public class AutoLocalizeText : MonoBehaviour
 
     public void StatusResultsGameOnlinePvP(string keyStatus)
     {
+        Debug.Log($"[DEBUG] Đang chạy trên: {gameObject.name} | Active: {gameObject.activeSelf} | Key nhận được: '{keyStatus}'");
+        Debug.Log($" thonog baso ....{transform.name} aaaaaa{transform.parent.name}");
+        if (transform.name != "ResultGameText") return;
         if (SceneManager.GetActiveScene().name == SceneType.MATCHINGONLINE.ToString() && localizeEvent != null)
         {
             if (!PhotonManager.Instance.IsPlayingOnline)
             {
-                Debug.Log($"<color=yellow>Localize:</color> Cập nhật trạng thái cho {transform.name}");
+                Debug.Log($"<color=yellow>Localize:</color> Cập nhật trạng thái cho {transform.name}"+ " "+ keyStatus);
+                
                 localizeEvent.StringReference.SetReference(TABLE_NAME, keyStatus);
                 localizeEvent.RefreshString();
             }

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 
 public class ShopManager : SingletonBase<ShopManager>
 {
+
     public PlayerData localPlayerData => PlayFabDataManager.Instance.playerData;
     // private const string DATA_KEY = "Player_Game_Data";
 
@@ -76,44 +77,5 @@ public class ShopManager : SingletonBase<ShopManager>
         }
     }
 
-   
-    //// --- PLAYFAB CLOUD SYNC ---
 
-    //public void SaveDataToPlayFab()
-    //{
-    //    localPlayerData.ValidateData(); // Kiểm tra tính toàn vẹn trước khi lưu
-
-    //    string jsonStr = JsonConvert.SerializeObject(localPlayerData);
-
-    //    var request = new UpdateUserDataRequest
-    //    {
-    //        Data = new Dictionary<string, string> { { DATA_KEY, jsonStr } },
-    //        Permission = UserDataPermission.Public
-    //    };
-
-    //    PlayFabClientAPI.UpdateUserData(request,
-    //        result => Debug.Log("Dữ liệu đã được đồng bộ lên PlayFab!"),
-    //        error => Debug.LogError("Lỗi đồng bộ: " + error.GenerateErrorReport())
-    //    );
-    //}
-
-    //public void LoadDataFromPlayFab()
-    //{
-    //    PlayFabClientAPI.GetUserData(new GetUserDataRequest(), result => {
-    //        if (result.Data != null && result.Data.ContainsKey(DATA_KEY))
-    //        {
-    //            localPlayerData = JsonConvert.DeserializeObject<PlayerData>(result.Data[DATA_KEY].Value);
-    //            localPlayerData.ValidateData();
-    //            Debug.Log("Tải dữ liệu thành công!");
-    //        }
-    //        else
-    //        {
-    //            // Khởi tạo cho người chơi mới
-    //            localPlayerData = new PlayerData();
-    //            localPlayerData.gold = startingGold;
-    //            localPlayerData.ValidateData();
-    //            SaveDataToPlayFab();
-    //        }
-    //    }, error => Debug.LogError("Lỗi tải dữ liệu: " + error.GenerateErrorReport()));
-    //}
 }

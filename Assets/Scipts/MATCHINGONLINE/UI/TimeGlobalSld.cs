@@ -24,9 +24,6 @@ public class TimeGlobalSld : SliderBase
     // Update is called once per frame
     void Update()
     {
-
-        // chỉ kich haotj khi game bắt đầu
-
         Debug.Log(slider.value + " " + PhotonManager.Instance.OnlineMatchManager.TimeGlobal);
         slider.value = PhotonManager.Instance.OnlineMatchManager.TimeGlobal;
 

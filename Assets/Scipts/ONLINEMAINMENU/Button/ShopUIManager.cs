@@ -6,8 +6,8 @@ using UnityEngine.UI;
 public class ShopUIManager : MonoBehaviour
 {
 
-    [SerializeField] private ActiveSectionButton[] button;
-    [SerializeField] private GameObject[] panelShop;
+    [SerializeField] private ActiveSectionButton[] button;  // button item
+    [SerializeField] private GameObject[] panelShop;  // hạng muc item ui của shop
     // Start is called before the first frame update
 
     public void ShowUI(int index)
@@ -17,12 +17,12 @@ public class ShopUIManager : MonoBehaviour
         {
 
             bool isAcitve = (i == index);
-            panelShop[i].SetActive(isAcitve);
+            panelShop[i].SetActive(isAcitve);// thưc hien active panel
         }
         for (int j = 0;j< button.Length ; j++) 
         {
             bool isAcitve = (j == index);
-            button[j].SetInteractable (!isAcitve);
+            button[j].SetInteractable (!isAcitve); // tắt cách button còn lại
         }
 
     }

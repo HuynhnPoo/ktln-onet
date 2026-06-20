@@ -35,9 +35,6 @@ public class ActiveSectionButton : ButtonBase
     }
     public void SetInteractable(bool value)
     {
-        //if(button==null)
-        //button = GetComponent<Button>();
-        //else
         button.interactable = value;
     }
 }

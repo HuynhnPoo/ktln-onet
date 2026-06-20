@@ -61,17 +61,26 @@ public class PreprocessorDirectives
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     public static void CheckFlatForm()
     {
-
-
-
 #if UNITY_EDITOR
         // Bật log cho Debug.Log khi đang trong Editor
         Debug.unityLogger.logEnabled = true;
+        Application.targetFrameRate = -1;
 #else
         // Tắt log cho Debug.Log khi đã build (bản Release)
         Debug.unityLogger.logEnabled = false;
-#endif
+if (SystemInfo.systemMemorySize < 2500) 
+    {
+        Application.targetFrameRate = 30; // Máy yếu chạy 30 FPS cho ổn định
     }
+    else 
+    {
+        Application.targetFrameRate = 60; // Máy mạnh chạy 60 FPS
+    }
+#endif
+        Screen.sleepTimeout = SleepTimeout.NeverSleep;
+    }
+
+
 
 }
 

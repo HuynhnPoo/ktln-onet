@@ -25,7 +25,6 @@ public class ControlTile : MonoBehaviour
         VisualTile vTile = GetComponentInChildren<VisualTile>();
 
         // Lấy vị trí đích cục bộ (Local) từ board và cộng với vị trí hiện tại của GridManager
-        // Cách này giúp tile luôn nằm đúng trong khung của GridManager
         Vector3 targetPos = board.GetPostionWorld(vTile.Col, vTile.Row);
 
         // Chuyển đổi targetPos từ Local sang World (tỉ lệ với cha của nó là GridManager)

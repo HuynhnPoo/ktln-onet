@@ -10,7 +10,7 @@ public class CoinTxt : TextBase
         if (isTotalCoin)
         {
 
-            text.SetText(GameManager.Instance.TotalCoinOnline.ToString());
+            text.SetText(ShopManager.Instance.localPlayerData.gold.ToString());
         }
         else
         {

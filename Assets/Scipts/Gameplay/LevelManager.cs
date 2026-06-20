@@ -45,21 +45,24 @@ public class LevelManager : MonoBehaviour, ICompoment
     {
         int levelToLoad = 0;
 
-        if (isOnlineMode && PlayFabDataManager.Instance.playerData != null)
+        //if (isOnlineMode && PlayFabDataManager.Instance.playerData != null)  // Nếu Online: Lấy level cao nhất hiện tại của người dùng
+        //{
+        //    levelToLoad = GameManager.Instance.CurrentLevel;
+        //}
+        //else // Nếu Offline: Lấy từ GameManager (thường là từ Local Save hoặc biến tạm)
+        //{
+        //}
+            levelToLoad = GameManager.Instance.CurrentLevel;
+
+        if (levelToLoad > 31)
         {
-            // Nếu Online: Lấy level cao nhất hiện tại của người dùng
-            levelToLoad = PlayFabDataManager.Instance.playerData.highestLevel;
+            int ramdomlevel = UnityEngine.Random.Range(20, 31);
+            LoadCurrentLevel(ramdomlevel); // nhớ set id trong SO if(levelToLoad >31)
         }
         else
         {
-            // Nếu Offline: Lấy từ GameManager (thường là từ Local Save hoặc biến tạm)
-            levelToLoad = GameManager.Instance.CurrentLevel;
-
+            LoadCurrentLevel(levelToLoad); // nhớ set id trong SO
         }
-
-        Debug.Log(levelToLoad);
-
-        LoadCurrentLevel(3); // nhớ set id trong SO
     }
 
     private void CheckForRoomLevel()
@@ -71,15 +74,15 @@ public class LevelManager : MonoBehaviour, ICompoment
             LoadCurrentLevel((int)levelID);
         }
     }
+
     public void LoadCurrentLevel(int currentLevel)
     {
-
-
         if (allLevel == null)
         {
             Debug.LogError("all level chưa được gắn");
             return;
         }
+        Debug.Log("hien thi ra " + currentLevel);
 
         currentLevelData = allLevel.GetLevelLayout(currentLevel);
         Debug.Log("level hiện tại là" + currentLevelData + "     " + currentLevel);
@@ -90,6 +93,8 @@ public class LevelManager : MonoBehaviour, ICompoment
             GameMechanics.Init((int)currentLevelData.timeLimit, currentLevelData.scorePerNormalMatch, currentLevelData.gravityType);
             // Đảm bảo dữ liệu cell không bị rỗng trước khi vẽ
             currentLevelData.EnsureGridSize();
+            UIManager.Instance.levelStatusStr = currentLevelData.levelName;
+
 
 
             // Gọi GridManager để vẽ
@@ -116,21 +121,5 @@ public class LevelManager : MonoBehaviour, ICompoment
         Debug.Log(isOnlineMode);
         GameManager.Instance.IsOnlineMode = isOnlineMode;
 
-
     }
-
-    //void sy
-
-    /*private void CreateDefaultLayout()
-    {
-        levelLayout = new bool[grid.Width, grid.Height];
-        for (int x = 0; x < grid.Width; x++)
-        {
-            for (int y = 0; y < grid.Height; y++)
-            {
-                levelLayout[x, y] = true;
-            }
-        }
-        grid.SetLevelLayout(levelLayout);
-    }*/
 }

@@ -32,7 +32,7 @@ public class LevelSelection : MonoBehaviour
     {
         for (int i = 0; i < buttons.Length; i++)
         {
-            if (i > levelReached)
+            if (i > levelReached)  // kiếm nếu i lớn hơn levelrached thì nó sẽ tắt khonogcho nhấn 
             {
                 buttons[i].interactable = false;
             }
