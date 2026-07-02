@@ -202,7 +202,7 @@ MonoBehaviour:
     type: 1
     linkedTile: {fileID: 0}
   useTimeLimit: 1
-  timeLimit: 40
+  timeLimit: 35
   maxNormalTypes: 6
   maxBoostPairs: 1
   requireStarToWin: 1

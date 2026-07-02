@@ -71,7 +71,7 @@ public class ShuffleBoost : BoostBase
 
                 visual.index = iconIDs[i];
 
-                visual.SetSkin(gridManager.TileData);
+                visual.SetSkin(gridManager.TileData,gridManager.Board.GetSizeBoard(gridManager.Height,gridManager.Width));
             }
         }
 

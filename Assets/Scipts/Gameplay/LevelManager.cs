@@ -106,7 +106,7 @@ public class LevelManager : MonoBehaviour, ICompoment
 
     }
 
-    private void HandlePvPLoad(int levelID)
+    private void HandlePvPLoad(int levelID) // hàm thực hiện load khi chơi online haowjc chơi
     {
         if (isPvPMode)
         {

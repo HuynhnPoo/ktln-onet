@@ -69,13 +69,18 @@ public class MatchBot : MonoBehaviour
                     // Sửa nguyên nhân 1: Ép kiểu chuẩn
                     pathArray[i] = new Vector2(foundPath[i].x, foundPath[i].y);
                 }
+                // ✅ Đổi turn về Player TRƯỚC khi Bot ăn
+                // Tránh race condition: currentTurnActorNumber vẫn là -1 khi RPC_HandleMatch chạy
+                //if (PhotonNetwork.IsMasterClient)
+                //{
+                //    ForceChangeTurnToPlayer();
+                //}
 
-                matchManager.photonView.RPC("RPC_HandleMatch", RpcTarget.All, (object)pathArray);
-/*
-                if (PhotonNetwork.IsMasterClient)
-                {
-                    Invoke(nameof(ForceChangeTurnToPlayer), 0.6f);
-                }*/
+                //// ✅ Chờ một chút để Room Properties cập nhật xong
+                //yield return new WaitForSeconds(0.3f);
+
+                // Sau đó mới gửi RPC ăn ô
+                matchManager.photonView.RPC("RPC_HandleMatch", RpcTarget.All, (object)pathArray,-1);
 
                 // Chờ cho đến khi đổi turn xong mới cho phép isBotThinking = false
                 yield return new WaitForSeconds(0.7f);

@@ -23,7 +23,7 @@ public class LeaderBoardCRT : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-       
+
     }
 
     public void GetLeaderBoard()
@@ -39,6 +39,12 @@ public class LeaderBoardCRT : MonoBehaviour
             StartPosition = 0,
             MaxResultsCount = 7, // gioi hạn có 7 người
 
+            ProfileConstraints = new PlayerProfileViewConstraints // để lấy profile và statics
+            {
+                ShowStatistics = true,
+                ShowDisplayName = true,
+            }
+
         };
 
         PlayFabClientAPI.GetLeaderboard(request, (results) =>
@@ -53,6 +59,7 @@ public class LeaderBoardCRT : MonoBehaviour
                 if (item.Profile != null && item.Profile.Statistics != null)
                 {
                     var levelStat = item.Profile.Statistics.Find(s => s.Name == "High_Level");
+
                     if (levelStat != null) highLevel = levelStat.Value;
                 }
 
@@ -79,7 +86,13 @@ public class LeaderBoardCRT : MonoBehaviour
         GetLeaderboardAroundPlayerRequest request = new GetLeaderboardAroundPlayerRequest
         {
             StatisticName = "Score",
-            MaxResultsCount = 1
+            MaxResultsCount = 1,
+
+            ProfileConstraints = new PlayerProfileViewConstraints   // để lấy profile và statics
+            {
+                ShowStatistics = true,
+                 ShowDisplayName = true,
+            }
         };
 
         PlayFabClientAPI.GetLeaderboardAroundPlayer(request, (result) =>

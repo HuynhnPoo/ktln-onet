@@ -35,7 +35,7 @@ public class OnlineMatchManager : MonoBehaviourPunCallbacks
     private int myScore = 0;
     private int opponentScore = 0;
     private float timeWaitCounter = 0;
-    private float maxWaitTimeout = 5; // thời gian để tạo ra bot
+    private float maxWaitTimeout = 30; // thời gian để tạo ra bot
 
 
     //public TextMeshProUGUI myScoreText;
@@ -172,11 +172,12 @@ public class OnlineMatchManager : MonoBehaviourPunCallbacks
         }
 
         // Gửi RPC cho tất cả mọi người
-        photonView.RPC(nameof(RPC_HandleMatch), RpcTarget.All, (object)pathArray);
+        photonView.RPC(nameof(RPC_HandleMatch), RpcTarget.All,
+        (object)pathArray, PhotonNetwork.LocalPlayer.ActorNumber);
     }
 
     [PunRPC]
-    public void RPC_HandleMatch(Vector2[] pathArray, PhotonMessageInfo info)
+    public void RPC_HandleMatch(Vector2[] pathArray, int senderActorNumber, PhotonMessageInfo info)
     {
         // Chuyển ngược lại về List Vector2Int để GridManager sử dụng
         List<Vector2Int> path = new List<Vector2Int>();
@@ -192,12 +193,12 @@ public class OnlineMatchManager : MonoBehaviourPunCallbacks
             gm.HandleMatch(path);
             // 3. Sử dụng PhotonMessageInfo để xác định chính xác AI hay Người chơi gửi yêu cầu ăn ô
 
-            if (PhotonNetwork.InRoom)
+            if (PhotonNetwork.InRoom && PhotonNetwork.IsMasterClient)
             {
 
-                int senderActorNumber = currentTurnActorNumber;
+              //  int senderActorNumber = currentTurnActorNumber;
                 // Đồng bộ trực tiếp điểm số dựa theo ID người gửi gói tin RPC này qua mạng
-                photonView.RPC(nameof(RPC_AddScore), RpcTarget.All, senderActorNumber, 10);
+                photonView.RPC(nameof(RPC_AddScore), RpcTarget.All, senderActorNumber, 10);//tăng lên 10 điểm score
             }
 
         }
@@ -308,7 +309,7 @@ public class OnlineMatchManager : MonoBehaviourPunCallbacks
         props.Add("CurrentTurnActor", actorNumber);
         PhotonNetwork.CurrentRoom.SetCustomProperties(props);
     }
-
+    
     public override void OnRoomPropertiesUpdate(ExitGames.Client.Photon.Hashtable propertiesThatChanged)
     {
         // Kiểm tra và cập nhật lượt
@@ -335,7 +336,7 @@ public class OnlineMatchManager : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    public void RPC_AddScore(int scorerActorNumber, int amount)
+    public void RPC_AddScore(int scorerActorNumber, int amount) // thực hiển thêm điểm
     {
         if (scorerActorNumber == -1)
         {
@@ -452,7 +453,7 @@ public class OnlineMatchManager : MonoBehaviourPunCallbacks
     }
     IEnumerator RoutineChangeScene() // chuyển về sence mainmeunu online
     {
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(1.5f);
         UIManager.Instance.ChangeScene(UIManager.SceneType.ONLINEMAINMENU);
     }
 
@@ -523,6 +524,12 @@ public class OnlineMatchManager : MonoBehaviourPunCallbacks
         
         ExitGames.Client.Photon.Hashtable props = new ExitGames.Client.Photon.Hashtable();
         props.Add("IsWithBot", true);
+        int levelToPlay = 4; // Hoặc dùng PlayFabDataManager.Instance.playerData.highestLevel;
+        int randomSeed = UnityEngine.Random.Range(0, 99999);
+
+        props.Add("LevelID", levelToPlay); // keyLevelIdStr cần được định nghĩa hoặc đổi thành "LevelID" giống PhotonManager
+        props.Add("LevelSeed", randomSeed);
+
         // 2. QUAN TRỌNG: Tự sinh thời gian bắt đầu trận đấu ngay tại đây vì không có người thứ 2 vào phòng
         if (!PhotonNetwork.CurrentRoom.CustomProperties.ContainsKey("MatchStartTime"))
         {
@@ -538,6 +545,7 @@ public class OnlineMatchManager : MonoBehaviourPunCallbacks
 
         PhotonNetwork.CurrentRoom.SetCustomProperties(props);
 
+        LevelManager.OnRequestLoadLevel?.Invoke(levelToPlay);
         // Kích hoạt biến thời gian trên máy local ngay lập tức
         //currentTurnTimer = turnTime;
         matchStarted = true;

@@ -18,8 +18,8 @@ MonoBehaviour:
   backgroundOverlay: {r: 0, g: 0, b: 0, a: 0}
   gridWidth: 9
   gridHeight: 9
-  cellSize: 1
-  spacing: 0.1
+  cellSize: 0.8
+  spacing: 0.05
   cells:
   - x: 0
     y: 0
@@ -224,7 +224,7 @@ MonoBehaviour:
   - x: 0
     y: 0
     iconID: 0
-    type: 1
+    type: 3
     linkedTile: {fileID: 0}
   - x: 0
     y: 0
@@ -431,7 +431,7 @@ MonoBehaviour:
   maxNormalTypes: 6
   maxBoostPairs: 1
   requireStarToWin: 1
-  scorePerNormalMatch: 100
+  scorePerNormalMatch: 300
   scorePerBoostMatch: 250
   useCombo: 1
   comboMultiplierStep: 0.5

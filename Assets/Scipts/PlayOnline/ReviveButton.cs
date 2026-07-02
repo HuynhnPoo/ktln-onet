@@ -31,9 +31,12 @@ public class ReviveButton : ButtonBase
             Time.timeScale = 1;
         }
 
+
         value++;
         GameManager.Instance.ValueRevive = GameManager.Instance.AddValueRevive(value); // them tien
         Debug.Log(value + GameManager.Instance.ValueRevive);
+        
+        UIManager.Instance.uiOnlinePlayGameCanvas.transform.GetChild(0).GetChild(1).gameObject.SetActive(true); // ui setting
     }
 
 

@@ -18,7 +18,7 @@ MonoBehaviour:
   backgroundOverlay: {r: 0, g: 0, b: 0, a: 0}
   gridWidth: 9
   gridHeight: 8
-  cellSize: 1
+  cellSize: 0.88
   spacing: 0.1
   cells:
   - x: 0
@@ -386,7 +386,7 @@ MonoBehaviour:
   maxNormalTypes: 6
   maxBoostPairs: 1
   requireStarToWin: 1
-  scorePerNormalMatch: 100
+  scorePerNormalMatch: 300
   scorePerBoostMatch: 250
   useCombo: 1
   comboMultiplierStep: 0.5

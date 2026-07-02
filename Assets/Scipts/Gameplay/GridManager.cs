@@ -212,7 +212,7 @@ public class GridManager : MonoBehaviour
 
                 VisualTile tile = obj.transform.GetChild(0).GetComponent<VisualTile>();
                 tile.index = assignedIndex;
-                tile.SetSkin(TileData);
+                tile.SetSkin(TileData,Board.GetSizeBoard(height,width));
                 tile.SetPostionGrid(posGrid.x, posGrid.y);
             }
         }
@@ -408,6 +408,17 @@ public class GridManager : MonoBehaviour
 
         if (GameMechanics.CheckNoMatchTile(Board, width, height))
         {
+            Debug.Log("<color=red>Hết nước đi!</color>");
+
+            // ✅ Online PvP: KHÔNG GameOver, chỉ kết thúc trận
+            if (GameManager.Instance.IsOnlineMode)
+            {
+                Debug.Log("Online mode: Hết nước đi → Kết thúc trận đấu sớm.");
+                OnlineMatchManager.OnResultStatus?.Invoke(); // Gọi DetermineWinner
+                return;
+            }
+
+
             Debug.Log("<color=red>Game Mechanics xác nhận: Hết nước đi hợp lệ! Bị kẹt hoàn toàn.</color>");
             GameManager.Instance.GameOver();
 

@@ -306,7 +306,7 @@ MonoBehaviour:
   maxNormalTypes: 6
   maxBoostPairs: 1
   requireStarToWin: 1
-  scorePerNormalMatch: 100
+  scorePerNormalMatch: 200
   scorePerBoostMatch: 250
   useCombo: 1
   comboMultiplierStep: 0.5

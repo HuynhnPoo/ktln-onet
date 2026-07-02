@@ -27,12 +27,19 @@ public class VisualTile : MonoBehaviour
     // Start is called before the first frame update
 
 
+    public void SetSkin(TileData skin,float sizeBoard)
+    {
+        if (skin == null && index < 0 && index >= skin.tileSprites.Length) return;
+
+        spriteRenderer.sprite = skin.tileSprites[index];
+        transform.localScale = Vector2.one * skin.scaleMultiplier* sizeBoard;
+    } 
     public void SetSkin(TileData skin)
     {
         if (skin == null && index < 0 && index >= skin.tileSprites.Length) return;
 
         spriteRenderer.sprite = skin.tileSprites[index];
-        transform.localScale = Vector2.one * skin.scaleMultiplier;
+       // transform.localScale = Vector2.one * skin.scaleMultiplier;
     }
     public void SetPostionGrid(int x, int Y)
     {

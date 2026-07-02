@@ -263,7 +263,7 @@ public class PlayFabDataManager : SingletonBase<PlayFabDataManager>
         return new PlayerData()
         {
             playerName = "",
-            gold = 100,
+            gold = 0,
             score = 0,
             highestLevel = 0,
 

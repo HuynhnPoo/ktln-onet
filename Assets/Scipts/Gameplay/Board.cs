@@ -143,6 +143,20 @@ public class Board
         // 3. Kiểm tra xem đã thắng chưa
         CheckLevelProgress(width, height);
     }
+
+    public float GetSizeBoard(int height,int width)
+    {
+        if(height ==8 || width == 8)
+        {
+            return 0.8f;
+        }
+        else if(height == 9 || width == 9)
+        {
+            return 0.7f;
+        }
+        return 1;
+
+    }
 }
 
 
